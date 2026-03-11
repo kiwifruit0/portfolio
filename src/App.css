@@ -1,16 +1,16 @@
 /* Nord Color Palette */
 :root {
-  --nord0: #2e3440; /* Dark bg */
-  --nord1: #3b4252; /* Status bar bg */
-  --nord2: #434c5e; /* Selection */
-  --nord3: #4c566a; /* Comments / UI elements */
-  --nord4: #d8dee9; /* Main text */
-  --nord5: #e5e9f0; /* Lighter text */
-  --nord6: #eceff4; /* Lightest text */
-  --nord8: #88c0d0; /* Cyan */
-  --nord9: #81a1c1; /* Blue */
-  --nord11: #bf616a; /* Red */
-  --nord14: #a3be8c; /* Green */
+  --nord0: #2e3440;
+  --nord1: #3b4252;
+  --nord2: #434c5e;
+  --nord3: #4c566a;
+  --nord4: #d8dee9;
+  --nord5: #e5e9f0;
+  --nord6: #eceff4;
+  --nord8: #88c0d0;
+  --nord9: #81a1c1;
+  --nord11: #bf616a;
+  --nord14: #a3be8c;
 }
 
 * {
@@ -19,58 +19,91 @@
   padding: 0;
 }
 
+html, body, #root {
+  height: 100%;
+}
+
 body {
   background-color: #1a1b26;
   background-image: url('assets/nord-pixel.png'); 
   background-size: cover;
   background-position: center;
-  height: 100vh;
+
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--nord4);
+
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--nord4);
 }
 
-/* main terminal container */
-.nvim-container {
-  width: 90vw;
-  height: 90vh;
-  background: rgba(46, 52, 64, 0.75);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--nord3);
-  border-radius: 8px;
+.app-container {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
+}
+
+/* navbar styles */
+.navbar {
+  height: 60px;
+  flex-shrink: 0;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+
+  padding: 0 30px;
+
+}
+
+.nav-logo {
+  font-weight: bold;
+  color: var(--nord8);
+}
+
+.nav-links {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+}
+
+.nav-link {
+  background: transparent;
+  border: none;
+  color: var(--nord4);
+  cursor: pointer;
+  font-family: inherit;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.nav-link:hover {
+  background: var(--nord2);
+}
+
+/* neovim container styles */
+
+.nvim-container {
+  width: 90vw;
+  height: 80vh;
+
+  margin: auto;
+
+  display: flex;
   overflow: hidden;
+
+  background: rgba(46, 52, 64, 0.75);
+  backdrop-filter: blur(10px);
+
+  border: 1px solid var(--nord3);
+  border-radius: 8px;
+
   box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
 
-/* top tabline */
-.tabline {
-  height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+/* neo tree sidebar styles */
 
-.tab {
-  background: var(--nord9);
-  color: var(--nord0);
-  padding: 2px 16px;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  font-weight: bold;
-}
-
-/* main layout grid */
-.main-area {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-/* neo-tree sidebar */
 .sidebar {
   width: 250px;
   border-right: 1px solid var(--nord3);
@@ -90,6 +123,7 @@ body {
   flex: 1;
   padding: 10px;
   list-style: none;
+  overflow-y: auto;
 }
 
 .tree-item {
@@ -105,11 +139,13 @@ body {
   background: var(--nord2);
 }
 
-/* editor area */
+/* editor styles */
+
 .editor {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 .editor-content {
@@ -117,6 +153,8 @@ body {
   padding: 20px 10px;
   overflow-y: auto;
 }
+
+/* code line styles */
 
 .line {
   display: flex;
@@ -141,6 +179,8 @@ body {
 .code-keyword { color: var(--nord9); }
 .code-string { color: var(--nord14); }
 
+/* blinking cursor styles */
+
 .cursor {
   display: inline-block;
   width: 10px;
@@ -156,7 +196,8 @@ body {
   50% { opacity: 0; }
 }
 
-/* bottom status lines */
+/* status line styles */
+
 .status-line {
   height: 25px;
   background: var(--nord1);
@@ -164,16 +205,11 @@ body {
   justify-content: space-between;
   align-items: center;
   font-size: 0.85rem;
+  border-top: 1px solid var(--nord3);
 }
 
 .sidebar .status-line {
   padding: 0 10px;
-  border-top: 1px solid var(--nord3);
-  color: var(--nord4);
-}
-
-.editor .status-line {
-  border-top: 1px solid var(--nord3);
 }
 
 .status-left, .status-right {
