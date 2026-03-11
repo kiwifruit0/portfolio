@@ -1,42 +1,200 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* Nord Color Palette */
+:root {
+  --nord0: #2e3440; /* Dark bg */
+  --nord1: #3b4252; /* Status bar bg */
+  --nord2: #434c5e; /* Selection */
+  --nord3: #4c566a; /* Comments / UI elements */
+  --nord4: #d8dee9; /* Main text */
+  --nord5: #e5e9f0; /* Lighter text */
+  --nord6: #eceff4; /* Lightest text */
+  --nord8: #88c0d0; /* Cyan */
+  --nord9: #81a1c1; /* Blue */
+  --nord11: #bf616a; /* Red */
+  --nord14: #a3be8c; /* Green */
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+body {
+  background-color: #1a1b26;
+  background-image: url('assets/nord-pixel.png'); 
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--nord4);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* main terminal container */
+.nvim-container {
+  width: 90vw;
+  height: 90vh;
+  background: rgba(46, 52, 64, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--nord3);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
 
-.card {
-  padding: 2em;
+/* top tabline */
+.tabline {
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.read-the-docs {
-  color: #888;
+.tab {
+  background: var(--nord9);
+  color: var(--nord0);
+  padding: 2px 16px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+/* main layout grid */
+.main-area {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* neo-tree sidebar */
+.sidebar {
+  width: 250px;
+  border-right: 1px solid var(--nord3);
+  display: flex;
+  flex-direction: column;
+  background: rgba(46, 52, 64, 0.3);
+}
+
+.tree-header {
+  padding: 10px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--nord5);
+}
+
+.tree-content {
+  flex: 1;
+  padding: 10px;
+  list-style: none;
+}
+
+.tree-item {
+  padding: 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  color: var(--nord4);
+}
+
+.tree-item.active {
+  background: var(--nord2);
+}
+
+/* editor area */
+.editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-content {
+  flex: 1;
+  padding: 20px 10px;
+  overflow-y: auto;
+}
+
+.line {
+  display: flex;
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+
+.line-number {
+  width: 40px;
+  text-align: right;
+  padding-right: 15px;
+  color: var(--nord3);
+  user-select: none;
+}
+
+.line.active .line-number {
+  color: var(--nord4);
+  font-weight: bold;
+}
+
+.code-comment { color: var(--nord3); }
+.code-keyword { color: var(--nord9); }
+.code-string { color: var(--nord14); }
+
+.cursor {
+  display: inline-block;
+  width: 10px;
+  height: 1.2em;
+  background-color: var(--nord4);
+  animation: blink 1s step-end infinite;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* bottom status lines */
+.status-line {
+  height: 25px;
+  background: var(--nord1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.sidebar .status-line {
+  padding: 0 10px;
+  border-top: 1px solid var(--nord3);
+  color: var(--nord4);
+}
+
+.editor .status-line {
+  border-top: 1px solid var(--nord3);
+}
+
+.status-left, .status-right {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.status-mode {
+  background: var(--nord9);
+  color: var(--nord0);
+  padding: 0 15px;
+  font-weight: bold;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  clip-path: polygon(0 0, 90% 0, 100% 100%, 0 100%);
+  margin-right: 10px;
+}
+
+.status-item {
+  padding: 0 10px;
+  color: var(--nord4);
 }
