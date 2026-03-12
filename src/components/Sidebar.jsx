@@ -3,7 +3,7 @@ export default function Sidebar({ files, activeFileName, onFileSelect }) {
     <aside className="sidebar">
 
       <div className="tree-header">
-        📁 ~/dev/portfolio
+         ~/portfolio
       </div>
 
       <ul className="tree-content">
@@ -13,7 +13,7 @@ export default function Sidebar({ files, activeFileName, onFileSelect }) {
             className={`tree-item ${file === activeFileName ? "active" : ""}`}
             onClick={() => onFileSelect(file)}
           >
-            📄 {file}
+             {file}
           </li>
         ))}
       </ul>

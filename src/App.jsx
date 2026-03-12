@@ -19,17 +19,24 @@ const pages = {
   "projects.cpp": {
     name: "projects.cpp",
     language: "c++",
-    component: Projects
+    component: Projects,
+    icon: ""
   },
   "experience.py": {
     name: "experience.py",
     language: "python",
-    component: Experience
+    component: Experience,
+    icon: ""
   },
   "education.sh": {
     name: "education.sh",
     language: "bash",
-    component: Education
+    component: Education,
+    icon: ""
+  },
+  "asdfasdf": {
+    name: "asdfasdf",
+    language: "adasdf"
   }
 };
 
