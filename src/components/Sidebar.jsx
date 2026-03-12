@@ -1,4 +1,5 @@
-export default function Sidebar({ files, activeFileName, onFileSelect }) {
+export default function Sidebar({ pages, activeFileName, onFileSelect }) {
+  const DEFAULT_ICON = "";
   return (
     <aside className="sidebar">
 
@@ -7,19 +8,23 @@ export default function Sidebar({ files, activeFileName, onFileSelect }) {
       </div>
 
       <ul className="tree-content">
-        {files.map(file => (
+        {Object.keys(pages).map((file) => {
+          const page = pages[file];
+          const icon = page && page.icon ? page.icon : DEFAULT_ICON;
+          return (
           <li
             key={file}
             className={`tree-item ${file === activeFileName ? "active" : ""}`}
             onClick={() => onFileSelect(file)}
           >
-             {file}
+          {icon} {file}
           </li>
-        ))}
+        );
+        })}
       </ul>
 
       <div className="status-line">
-        neo-tree filesystem [{files.length}]
+        neo-tree filesystem [{Object.keys(pages).length}]
       </div>
 
     </aside>

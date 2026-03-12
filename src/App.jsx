@@ -31,12 +31,7 @@ const pages = {
   "education.sh": {
     name: "education.sh",
     language: "bash",
-    component: Education,
-    icon: ""
-  },
-  "asdfasdf": {
-    name: "asdfasdf",
-    language: "adasdf"
+    component: Education
   }
 };
 
@@ -45,7 +40,6 @@ export default function App() {
 
   const activePage = pages[activeFileName];
   const ActiveComponent = activePage.component;
-  console.log(activePage);
 
   return (
     <div className="app-container">
@@ -57,7 +51,7 @@ export default function App() {
 
       <div className="nvim-container">
         <Sidebar
-          files={Object.keys(pages)}
+          pages={pages}
           activeFileName={activeFileName}
           onFileSelect={setActiveFileName}
         />
