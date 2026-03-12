@@ -1,66 +1,91 @@
-import { Fragment } from "react";
+import { Fragment, useState, useLayoutEffect, useRef } from "react";
 
-// Card dimensions — two cards + a 2-char gap = 78 chars per merged row
-const W = 38;      // card width in monospace chars
-const INNER = 32;  // inner content: │  <32 chars>  │
-const GAP = "  ";  // gap between the two columns
+const CHAR_W = 8.4;        // JetBrains Mono advance width at 14px
+const COL_GAP = 2;         // chars between the two columns
+const PADDING_LEFT  = 10;  // .editor-body padding-left  (px)
+const PADDING_RIGHT = 20;  // .editor-body padding-right (px) — must match CSS
 
-function pad(s) {
-  const str = s || "";
-  if (str.length >= INNER) return str.slice(0, INNER - 3) + "...";
-  // Use regular spaces; white-space:pre on the row element keeps them intact
-  return str + " ".repeat(INNER - str.length);
+// Word-wrap a string to fit within `width` chars, returning one string per line.
+function wrapText(text, width) {
+  if (!text) return [""];
+  const words = text.split(" ");
+  const lines = [];
+  let line = "";
+  for (const word of words) {
+    const candidate = line ? `${line} ${word}` : word;
+    if (candidate.length <= width) {
+      line = candidate;
+    } else {
+      if (line) lines.push(line);
+      // Single word longer than width: hard-truncate
+      line = word.length > width ? word.slice(0, width - 3) + "..." : word;
+    }
+  }
+  if (line) lines.push(line);
+  return lines.length ? lines : [""];
 }
 
-// Returns an array of 6 JSX fragments — one per card row.
-// Always 6 rows so paired cards are the same height.
-function cardLines({ name, desc, tech = [], link = "" }) {
-  const titleDashes = W - name.length - 5;
+// Pad / truncate a string to exactly `width` chars.
+// Spaces preserved by white-space:pre on the row element.
+function pad(str, width) {
+  const s = str || "";
+  if (s.length >= width) return s.slice(0, width - 3) + "...";
+  return s + " ".repeat(width - s.length);
+}
+
+// Build the JSX rows for one card.
+// descLineCount lets the caller normalise heights across a pair.
+function buildRows(props, W, descLineCount) {
+  const INNER = W - 6;
+  const { name, desc, tech = [], link = "" } = props;
+  const b = (s) => <span className="card-border">{s}</span>;
+  const titleDashes = Math.max(1, W - name.length - 5);
   const techStr = tech.map((t) => `[${t}]`).join("  ");
   const linkStr = link ? `↗  ${link}` : "";
 
-  const b = (s) => <span className="card-border">{s}</span>;
+  const descLines = wrapText(desc, INNER);
+  // Pad to the shared target so both cards in a pair are the same height
+  while (descLines.length < descLineCount) descLines.push("");
 
   return [
-    // ╭─ name ────────────────────────────╮
-    <>
-      {b("╭─ ")}
-      <span className="card-name">{name}</span>
-      {b(" " + "─".repeat(Math.max(1, titleDashes)) + "╮")}
-    </>,
-
-    // ├────────────────────────────────────┤
+    // ╭─ name ─────────────────────────────────╮
+    <>{b("╭─ ")}<span className="card-name">{name}</span>{b(" " + "─".repeat(titleDashes) + "╮")}</>,
+    // ├────────────────────────────────────────┤
     <>{b("├" + "─".repeat(W - 2) + "┤")}</>,
-
-    // │  description                       │
-    <>
-      {b("│  ")}
-      <span className="card-desc">{pad(desc)}</span>
-      {b("  │")}
-    </>,
-
-    // │  [Tech]  [Tech]                    │  (blank row if no tech)
-    <>
-      {b("│  ")}
-      <span className="card-tech">{pad(techStr)}</span>
-      {b("  │")}
-    </>,
-
-    // │  ↗  link                           │  (blank row if no link)
-    <>
-      {b("│  ")}
-      <span className="card-link">{pad(linkStr)}</span>
-      {b("  │")}
-    </>,
-
-    // ╰────────────────────────────────────╯
+    // │  description line(s)                   │
+    ...descLines.map((line) => (
+      <>{b("│  ")}<span className="card-desc">{pad(line, INNER)}</span>{b("  │")}</>
+    )),
+    // │  [Tech]  [Tech]                        │
+    <>{b("│  ")}<span className="card-tech">{pad(techStr, INNER)}</span>{b("  │")}</>,
+    // │  ↗  link                               │
+    <>{b("│  ")}<span className="card-link">{pad(linkStr, INNER)}</span>{b("  │")}</>,
+    // ╰────────────────────────────────────────╯
     <>{b("╰" + "─".repeat(W - 2) + "╯")}</>,
   ];
 }
 
-// Renders cards in pairs as merged rows so the cursor grid stays aligned.
-// Each visual row is a single <p> containing both cards' content side-by-side.
+// Renders cards in pairs as merged <p> rows so the cursor grid stays aligned.
+// Width is measured from the live DOM and updates on resize.
 export default function TwoColumnCards({ cards = [] }) {
+  const [editorWidth, setEditorWidth] = useState(0);
+  const anchorRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const body = anchorRef.current?.closest(".editor-body");
+    if (!body) return;
+    const update = () => setEditorWidth(body.clientWidth);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(body);
+    return () => ro.disconnect();
+  }, []);
+
+  // Available chars between left-padding start and right-padding start
+  const availablePx = (editorWidth || 640) - PADDING_LEFT - PADDING_RIGHT;
+  const W = Math.max(20, Math.floor((availablePx / CHAR_W - COL_GAP) / 2));
+  const INNER = W - 6;
+
   const pairs = [];
   for (let i = 0; i < cards.length; i += 2) {
     pairs.push([cards[i], cards[i + 1] ?? null]);
@@ -69,17 +94,28 @@ export default function TwoColumnCards({ cards = [] }) {
   return (
     <>
       {pairs.map((pair, pi) => {
-        const [left, right] = pair;
-        const L = cardLines(left);
-        const R = right ? cardLines(right) : null;
+        const [leftProps, rightProps] = pair;
+
+        // Determine shared desc line count for this pair
+        const leftDescLines  = wrapText(leftProps.desc,  INNER).length;
+        const rightDescLines = rightProps ? wrapText(rightProps.desc, INNER).length : 0;
+        const descLineCount  = Math.max(leftDescLines, rightDescLines);
+
+        const leftRows  = buildRows(leftProps,  W, descLineCount);
+        const rightRows = rightProps ? buildRows(rightProps, W, descLineCount) : null;
+        const gap = " ".repeat(COL_GAP);
 
         return (
           <Fragment key={pi}>
             {pi > 0 && <p className="blank"></p>}
-            {L.map((leftRow, ri) => (
-              <p key={ri} className="card-row">
+            {leftRows.map((leftRow, ri) => (
+              <p
+                key={ri}
+                className="card-row"
+                ref={ri === 0 && pi === 0 ? anchorRef : null}
+              >
                 {leftRow}
-                {R && <>{GAP}{R[ri]}</>}
+                {rightRows && <>{gap}{rightRows[ri]}</>}
               </p>
             ))}
           </Fragment>
@@ -88,4 +124,5 @@ export default function TwoColumnCards({ cards = [] }) {
     </>
   );
 }
+
 

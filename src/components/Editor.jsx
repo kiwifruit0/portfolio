@@ -12,6 +12,8 @@ function buildLineData(container) {
     return [{ y: 2, xOffset: 0, charWidth: 8.4, height: 22, textLength: 0, lineNumberHeight: 27 }];
   }
 
+  const paddingRight = parseFloat(window.getComputedStyle(container).paddingRight) || 0;
+
   return elements.map((el) => {
     const style = window.getComputedStyle(el);
     const fontSize = parseFloat(style.fontSize); // px
@@ -24,9 +26,9 @@ function buildLineData(container) {
     const xOffset = el.offsetLeft;
     // Vertically centre the cursor block within the element
     const y = el.offsetTop + Math.round((elHeight - cursorHeight) / 2);
-    // Clamp text length to the available horizontal space after the indent
+    // Clamp text length to the available horizontal space (excluding right padding)
     const rawLen = (el.textContent || "").trim().length;
-    const maxChars = Math.floor((container.clientWidth - xOffset) / charWidth);
+    const maxChars = Math.floor((container.clientWidth - xOffset - paddingRight) / charWidth);
     const textLength = Math.min(rawLen, maxChars);
 
     return { y, xOffset, charWidth, height: cursorHeight, textLength, lineNumberHeight: elHeight };
@@ -43,10 +45,24 @@ export default function Editor({ file, children }) {
 
   useEffect(() => {
     if (!contentRef.current) return;
-    const data = buildLineData(contentRef.current);
+    const container = contentRef.current;
+
+    // Full reset when the page changes
+    const data = buildLineData(container);
     setLinesData(data);
     setCursor(data.length - 1);
     setColumn(0);
+
+    // Re-read positions whenever content inside the editor body changes
+    // (e.g. TwoColumnCards recalculates its width after a resize)
+    const mo = new MutationObserver(() => {
+      const updated = buildLineData(container);
+      setLinesData(updated);
+      // Cursor / column intentionally not reset — this is a layout-only refresh
+    });
+    mo.observe(container, { subtree: true, childList: true, characterData: true });
+
+    return () => mo.disconnect();
   }, [children]);
 
   useEffect(() => {

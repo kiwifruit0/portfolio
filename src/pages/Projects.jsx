@@ -16,7 +16,13 @@ export default function Projects() {
         },
         {
           name: "kv-store",
-          desc: "Distributed key-value store.",
+          desc: "what happens when you implement a distributed key-value store in Go using the Raft consensus algorithm? find out in this project.",
+          tech: ["Go", "Raft"],
+          link: "github.com/tobyjennings/kv-store",
+        },
+        {
+          name: "other project",
+          desc: "this is a long sentence i want to check if wrapping works correctly in the project card component.",
           tech: ["Go", "Raft"],
           link: "github.com/tobyjennings/kv-store",
         },
