@@ -3,7 +3,7 @@ export default function Navbar({ pages, onNavigate }) {
     <nav className="navbar">
 
       <div className="nav-logo">
-        ~/kiwi.dev
+        ~/toby.jennings
       </div>
 
       <div className="nav-links">

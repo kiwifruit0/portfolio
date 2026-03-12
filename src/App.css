@@ -1,4 +1,29 @@
 /* Nord Color Palette */
+/*
+ * Copyright (c) 2016-present Sven Greb <development@svengreb.de>
+ * This source code is licensed under the MIT license found in the license file.
+ */
+
+/*
+ * References:
+ *   1. https://www.w3.org/TR/css-variables
+ *   2. https://www.w3.org/TR/selectors/#root-pseudo
+ *   3. https://drafts.csswg.org/css-variables
+ *   4. https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables
+ *   5. https://warpspire.com/kss
+ *   6. https://github.com/kss-node/kss-node
+ */
+
+/*
+An arctic, north-bluish color palette.
+Created for the clean- and minimal flat design pattern to achieve a optimal focus and readability for code syntax
+highlighting and UI.
+It consists of a total of sixteen, carefully selected, dimmed pastel colors for a eye-comfortable, but yet colorful
+ambiance.
+
+Styleguide Nord
+*/
+
 :root {
   --nord0: #2e3440;
   --nord1: #3b4252;
@@ -7,10 +32,15 @@
   --nord4: #d8dee9;
   --nord5: #e5e9f0;
   --nord6: #eceff4;
+  --nord7: #8fbcbb;
   --nord8: #88c0d0;
   --nord9: #81a1c1;
+  --nord10: #5e81ac;
   --nord11: #bf616a;
+  --nord12: #d08770;
+  --nord13: #ebcb8b;
   --nord14: #a3be8c;
+  --nord15: #b48ead;
 }
 
 * {
@@ -54,7 +84,6 @@ body {
   align-items: center;
 
   padding: 0 30px;
-
 }
 
 .nav-logo {
@@ -67,8 +96,8 @@ body {
   gap: 30px;
   justify-content: center;
   background: rgba(46, 52, 64, 0.9);
-  border-radius: 8px;
-  padding: 6px 12px;
+  border-radius: 10px;
+  padding: 6px 30px;
 }
 
 .nav-link {
@@ -79,6 +108,7 @@ body {
   font-family: inherit;
   padding: 6px 12px;
   border-radius: 6px;
+  font-weight: bold;
 }
 
 .nav-link:hover {
@@ -149,21 +179,38 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  position: relative;
+}
+
+.editor-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 0;
 }
 
 .editor-content {
-  flex: 1;
-  padding: 20px 10px;
-  overflow-y: auto;
+  display: flex;
+  align-items: flex-start;
+  padding-left: 10px;
 }
 
 .editor-body {
   flex: 1;
+  position: relative;
+  line-height: 27px; 
+  font-size: 14px;
+  padding-left: 10px;
 }
 
 .editor-line {
   position: relative;
   min-height: 22px;
+}
+
+.bang {
+  color: var(--nord3);
+  font-weight: bold;
+  line-height: 27px;
 }
 
 /* code line styles */
@@ -176,14 +223,20 @@ body {
 
 .line-numbers {
   width: 50px;
-  padding-right: 10px;
+  flex-shrink: 0;
   text-align: right;
   color: var(--nord3);
   user-select: none;
+  font-size: 14px;
+  /* Visual boundary for the gutter */
+  border-right: 1px solid rgba(76, 86, 106, 0.3); 
 }
 
 .line-number {
-  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 15px;
 }
 
 .line-number.active {
@@ -195,19 +248,17 @@ body {
 .code-keyword { color: var(--nord9); }
 .code-string { color: var(--nord14); }
 
-/* blinking cursor styles */
+/* cursor styles */
 
 .cursor {
   position: absolute;
-  width: 8px;
-  height: 1.2em;
-  background: var(--nord4);
-  animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  top: 0;
+  left: 0;
+  background: var(--nord9);
+  z-index: 10;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  filter: brightness(1.3);
 }
 
 /* status line styles */
@@ -247,4 +298,50 @@ body {
 .status-item {
   padding: 0 10px;
   color: var(--nord4);
+}
+
+
+/* general element styling */
+
+page * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* Ensure the font doesn't push the height past 27px */
+  line-height: 27px; 
+}
+
+.page ul, .page ol {
+  padding-left: 25px;
+  margin: 0;
+  list-style-position: outside;
+}
+
+.page li {
+  line-height: 27px;
+  margin-bottom: 0;
+}
+
+.page li::marker {
+  color: var(--nord3);
+}
+
+/* Headings: To make them look like 'headers' but stay on the grid */
+.page h1 {
+  font-size: 1.8rem;
+  height: 54px; /* Occupies exactly 2 lines */
+  display: flex;
+  align-items: center; /* Centers text within those 2 lines */
+  color: var(--nord8);
+}
+
+.page h3 {
+  font-size: 1.1rem;
+  height: 27px; /* Occupies exactly 1 line */
+  color: var(--nord9);
+}
+
+/* If you want a blank line between sections, do it intentionally */
+.project {
+  margin-top: 27px; /* This is exactly "one blank line" in Vim */
 }
