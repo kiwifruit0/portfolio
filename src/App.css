@@ -303,12 +303,18 @@ body {
 
 /* general element styling */
 
-page * {
+/* Reset margins/padding on all page content so nothing breaks the 27 px grid */
+.page * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  /* Ensure the font doesn't push the height past 27px */
-  line-height: 27px; 
+  line-height: 27px;
+}
+
+/* Blank line: an explicit empty row, navigable like any vim line */
+.page .blank {
+  display: block;
+  height: 27px;
 }
 
 .page ul, .page ol {
@@ -326,22 +332,19 @@ page * {
   color: var(--nord3);
 }
 
-/* Headings: To make them look like 'headers' but stay on the grid */
+/* Headings: fixed heights keep everything on the 27 px grid */
 .page h1 {
   font-size: 1.8rem;
-  height: 54px; /* Occupies exactly 2 lines */
+  height: 54px;
   display: flex;
-  align-items: center; /* Centers text within those 2 lines */
+  align-items: center;
   color: var(--nord8);
 }
 
 .page h3 {
   font-size: 1.1rem;
-  height: 27px; /* Occupies exactly 1 line */
+  height: 27px;
+  display: flex;
+  align-items: center;
   color: var(--nord9);
-}
-
-/* If you want a blank line between sections, do it intentionally */
-.project {
-  margin-top: 27px; /* This is exactly "one blank line" in Vim */
 }

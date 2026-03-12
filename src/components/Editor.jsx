@@ -18,17 +18,18 @@ function buildLineData(container) {
     // JetBrains Mono has a ~0.6 advance-width-to-font-size ratio
     const charWidth = parseFloat((fontSize * 0.6).toFixed(2));
     // Scale cursor height with the font; cap just below element height
-    const cursorHeight = Math.min(Math.round(fontSize * 1.6), el.offsetHeight - 2);
+    const elHeight = Math.max(el.offsetHeight, 1);
+    const cursorHeight = Math.max(1, Math.min(Math.round(fontSize * 1.6), elHeight - 2));
     // el.offsetLeft already includes any ul/ol padding-left indent
     const xOffset = el.offsetLeft;
     // Vertically centre the cursor block within the element
-    const y = el.offsetTop + Math.round((el.offsetHeight - cursorHeight) / 2);
+    const y = el.offsetTop + Math.round((elHeight - cursorHeight) / 2);
     // Clamp text length to the available horizontal space after the indent
     const rawLen = (el.textContent || "").trim().length;
     const maxChars = Math.floor((container.clientWidth - xOffset) / charWidth);
     const textLength = Math.min(rawLen, maxChars);
 
-    return { y, xOffset, charWidth, height: cursorHeight, textLength, lineNumberHeight: el.offsetHeight };
+    return { y, xOffset, charWidth, height: cursorHeight, textLength, lineNumberHeight: elHeight };
   });
 }
 
