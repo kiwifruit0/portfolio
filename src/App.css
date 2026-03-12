@@ -248,6 +248,14 @@ body {
 .code-keyword { color: var(--nord9); }
 .code-string { color: var(--nord14); }
 
+/* project card styles */
+.card-row    { white-space: pre; }
+.card-border { color: var(--nord3); }
+.card-name   { color: var(--nord8); font-weight: bold; }
+.card-desc   { color: var(--nord4); }
+.card-tech   { color: var(--nord14); }
+.card-link   { color: var(--nord9); }
+
 /* cursor styles */
 
 .cursor {
