@@ -1,46 +1,64 @@
 import { useState, useEffect, useRef } from "react";
 
-// Walk the DOM and return one metadata entry per block element.
-// y and lineNumberHeight come directly from the DOM so tall elements (e.g. h1)
-// produce a correctly-sized line-number row without needing empty filler rows.
+const DEFAULT_LINE = { y: 2, xOffset: 0, charWidth: 8.4, height: 22, textLength: 0, lineNumberHeight: 27 };
+
+function maxColumnForLine(line) {
+  return Math.max(0, (line?.textLength ?? 0) - 1);
+}
+
+// Walk the DOM and return metadata for each cursor row.
+// Wrappable rows (p/li) are split into visual lines so wrapped text is navigable.
 function buildLineData(container) {
   const elements = Array.from(
     container.querySelectorAll("h1, h2, h3, h4, h5, h6, p, li")
   );
 
   if (elements.length === 0) {
-    return [{ y: 2, xOffset: 0, charWidth: 8.4, height: 22, textLength: 0, lineNumberHeight: 27 }];
+    return [DEFAULT_LINE];
   }
 
-  const paddingRight = parseFloat(window.getComputedStyle(container).paddingRight) || 0;
+  const containerStyle = window.getComputedStyle(container);
+  const paddingRight = parseFloat(containerStyle.paddingRight) || 0;
+  const defaultLineHeight = parseFloat(containerStyle.lineHeight) || 27;
+  const lines = [];
 
-  return elements.map((el) => {
+  elements.forEach((el) => {
     const style = window.getComputedStyle(el);
-    const fontSize = parseFloat(style.fontSize); // px
+    const fontSize = parseFloat(style.fontSize) || 14;
+    const lineHeight = parseFloat(style.lineHeight) || defaultLineHeight;
     // JetBrains Mono has a ~0.6 advance-width-to-font-size ratio
     const charWidth = parseFloat((fontSize * 0.6).toFixed(2));
-    // Scale cursor height with the font; cap just below element height
     const elHeight = Math.max(el.offsetHeight, 1);
-    const cursorHeight = Math.max(1, Math.min(Math.round(fontSize * 1.6), elHeight - 2));
     // el.offsetLeft already includes any ul/ol padding-left indent
     const xOffset = el.offsetLeft;
-    // Vertically centre the cursor block within the element
-    const y = el.offsetTop + Math.round((elHeight - cursorHeight) / 2);
-    // Clamp text length to the available horizontal space (excluding right padding)
+    const isWrappable = el.tagName === "P" || el.tagName === "LI";
+    const visualRows = isWrappable
+      ? Math.max(1, Math.round(elHeight / lineHeight))
+      : 1;
+    const rowHeight = isWrappable ? lineHeight : elHeight;
+    const cursorHeight = Math.max(1, Math.min(Math.round(fontSize * 1.6), Math.max(1, rowHeight - 2)));
     const rawLen = (el.textContent || "").trim().length;
-    const maxChars = Math.floor((container.clientWidth - xOffset - paddingRight) / charWidth);
-    const textLength = Math.min(rawLen, maxChars);
+    const maxChars = Math.max(1, Math.floor((container.clientWidth - xOffset - paddingRight) / charWidth));
 
-    return { y, xOffset, charWidth, height: cursorHeight, textLength, lineNumberHeight: elHeight };
+    for (let rowIndex = 0; rowIndex < visualRows; rowIndex += 1) {
+      const y = isWrappable
+        ? el.offsetTop + rowIndex * lineHeight + Math.round((lineHeight - cursorHeight) / 2)
+        : el.offsetTop + Math.round((elHeight - cursorHeight) / 2);
+      const textLength = !isWrappable || visualRows === 1
+        ? Math.min(rawLen, maxChars)
+        : Math.max(0, Math.min(maxChars, rawLen - rowIndex * maxChars));
+
+      lines.push({ y, xOffset, charWidth, height: cursorHeight, textLength, lineNumberHeight: rowHeight });
+    }
   });
+
+  return lines.length > 0 ? lines : [DEFAULT_LINE];
 }
 
 export default function Editor({ file, children }) {
   const [cursor, setCursor] = useState(0);
   const [column, setColumn] = useState(0);
-  const [linesData, setLinesData] = useState([
-    { y: 2, xOffset: 0, charWidth: 8.4, height: 22, textLength: 0, lineNumberHeight: 27 },
-  ]);
+  const [linesData, setLinesData] = useState([DEFAULT_LINE]);
   const contentRef = useRef(null);
   const isPdfViewer = file.language === "pdf";
 
@@ -58,16 +76,29 @@ export default function Editor({ file, children }) {
     setCursor(data.length - 1);
     setColumn(0);
 
-    // Re-read positions whenever content inside the editor body changes
-    // (e.g. TwoColumnCards recalculates its width after a resize)
-    const mo = new MutationObserver(() => {
+    const refreshLineData = () => {
       const updated = buildLineData(container);
       setLinesData(updated);
-      // Cursor / column intentionally not reset — this is a layout-only refresh
-    });
+      setCursor((prevCursor) => {
+        const clampedCursor = Math.min(prevCursor, updated.length - 1);
+        setColumn((prevColumn) => Math.min(prevColumn, maxColumnForLine(updated[clampedCursor])));
+        return clampedCursor;
+      });
+    };
+
+    // Re-read positions whenever content inside the editor body changes
+    // (e.g. TwoColumnCards recalculates its width after a resize)
+    const mo = new MutationObserver(refreshLineData);
     mo.observe(container, { subtree: true, childList: true, characterData: true });
 
-    return () => mo.disconnect();
+    // Wrapping can change without DOM mutations when container width changes.
+    const ro = new ResizeObserver(refreshLineData);
+    ro.observe(container);
+
+    return () => {
+      mo.disconnect();
+      ro.disconnect();
+    };
   }, [children, isPdfViewer]);
 
   useEffect(() => {
@@ -76,8 +107,7 @@ export default function Editor({ file, children }) {
     }
 
     const maxCol = (row) => {
-      const len = linesData[row]?.textLength ?? 0;
-      return Math.max(0, len - 1);
+      return maxColumnForLine(linesData[row]);
     };
 
     const handleKey = (e) => {
@@ -117,7 +147,7 @@ export default function Editor({ file, children }) {
     return () => window.removeEventListener("keydown", handleKey);
   }, [linesData, cursor, isPdfViewer]);
 
-  const currentLine = linesData[cursor] ?? { y: 2, xOffset: 0, charWidth: 8.4, height: 22, textLength: 0, lineNumberHeight: 27 };
+  const currentLine = linesData[cursor] ?? DEFAULT_LINE;
   const cursorX = currentLine.xOffset + column * currentLine.charWidth;
   const cursorY = currentLine.y;
 
