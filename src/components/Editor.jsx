@@ -159,31 +159,30 @@ export default function Editor({ file, children }) {
   const currentLine = linesData[cursor] ?? DEFAULT_LINE;
   const cursorX = currentLine.xOffset + column * currentLine.charWidth;
   const cursorY = currentLine.y;
+  const logicalLineNumbers = linesData.reduce((numbers, line) => {
+    const previous = numbers.length > 0 ? numbers[numbers.length - 1] : 0;
+    const next = line.showLineNumber ? previous + 1 : previous;
+    return [...numbers, next];
+  }, []);
 
-  let logicalLine = 0;
   return (
     <main className="editor">
       <div className="editor-scroll-container">
         <div className="editor-content">
           {!isPdfViewer && (
             <div className="line-numbers">
-
-              {linesData.map((line, i) => {
-                if (line.showLineNumber) logicalLine += 1;
-
-                return (
-                  <div
-                    key={i}
-                    className={`line-number ${i === cursor ? "active" : ""}`}
-                    style={{
-                      height: `${line.lineNumberHeight}px`,
-                      lineHeight: `${line.lineNumberHeight}px`
-                    }}
-                  >
-                    {line.showLineNumber ? logicalLine : ""}
-                  </div>
-                );
-              })}
+              {linesData.map((line, i) => (
+                <div
+                  key={i}
+                  className={`line-number ${i === cursor ? "active" : ""}`}
+                  style={{
+                    height: `${line.lineNumberHeight}px`,
+                    lineHeight: `${line.lineNumberHeight}px`
+                  }}
+                >
+                  {line.showLineNumber ? logicalLineNumbers[i] : ""}
+                </div>
+              ))}
             </div>
           )}
 
