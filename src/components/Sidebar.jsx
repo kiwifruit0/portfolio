@@ -1,10 +1,12 @@
+import { Icon } from "@iconify/react";
+
 export default function Sidebar({ pages, activeFileName, onFileSelect }) {
-  const DEFAULT_ICON = "";
+  const DEFAULT_ICON = "mdi:file-outline";
   return (
     <aside className="sidebar">
 
       <div className="tree-header">
-         ~/portfolio
+        <Icon icon={"mdi:folder-multiple-outline"} width={18} /> ~/portfolio
       </div>
 
       <ul className="tree-content">
@@ -17,7 +19,7 @@ export default function Sidebar({ pages, activeFileName, onFileSelect }) {
             className={`tree-item ${file === activeFileName ? "active" : ""}`}
             onClick={() => onFileSelect(file)}
           >
-          {icon} {file}
+          <Icon icon={pages[file].icon} width={18}/> {file}
           </li>
         );
         })}

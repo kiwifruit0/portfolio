@@ -150,6 +150,9 @@ body {
   font-size: 0.9rem;
   font-weight: bold;
   color: var(--nord5);
+  display: flex;
+  gap: 6px;
+  align-items: center;
 }
 
 .tree-content {
@@ -164,7 +167,8 @@ body {
   border-radius: 6px;
   cursor: pointer;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
   color: var(--nord4);
 }
 
@@ -286,17 +290,21 @@ body {
 
 .cv-download-button {
   color: var(--nord0);
-  background: var(--nord14);
-  border: 1px solid var(--nord14);
+  background: var(--nord9);
+  border: 3px solid var(--nord9);
   border-radius: 4px;
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: bold;
   padding: 6px 10px;
+  gap: 6px;
+  display: flex;
+  align-items: flex-end;
 }
 
 .cv-download-button:hover {
-  background: #8cb079;
+  background: var(--nord8);
+  border-color: var(--nord8);
 }
 
 .cv-viewport {

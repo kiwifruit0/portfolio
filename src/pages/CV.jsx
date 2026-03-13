@@ -1,3 +1,4 @@
+import { Icon } from "@iconify/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 import pdfWorkerUrl from "pdfjs-dist/legacy/build/pdf.worker.min.mjs?url";
@@ -135,13 +136,13 @@ export default function CV() {
       <div className="cv-toolbar">
         <p className="cv-toolbar-title">Toby_Jennings_CV.pdf</p>
         <a className="cv-download-button" href={cvPdfUrl} download="Toby_Jennings_CV.pdf">
-           download
+          <Icon icon="mdi:tray-download" width={15}/> download
         </a>
       </div>
 
       <div className="cv-viewport" ref={viewportRef}>
         {error && <p classname="cv-error">{error}</p>}
-        {!error && isLoading && <p className="cv-loading">Rendering CV...</p>}
+        {!error && isLoading && <p className="cv-loading">Rendering cv...</p>}
 
         {!error &&
           pageIndexes.map((pageIndex) => (

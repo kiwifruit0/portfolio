@@ -16,30 +16,32 @@ const pages = {
   "index.md": {
     name: "index.md",
     language: "markdown",
-    component: Home
+    component: Home,
+    icon: "mdi:language-markdown"
   },
   "projects.cpp": {
     name: "projects.cpp",
     language: "c++",
     component: Projects,
-    icon: ""
+    icon: "mdi:language-cpp"
   },
   "experience.py": {
     name: "experience.py",
     language: "python",
     component: Experience,
-    icon: ""
+    icon: "mdi:language-python"
   },
   "education.sh": {
     name: "education.sh",
     language: "bash",
-    component: Education
+    component: Education,
+    icon: "mdi:terminal-line"
   },
   "cv.pdf": {
     name: "cv.pdf",
     language: "pdf",
     component: CV,
-    icon: "󰈙"
+    icon: "mdi:file-pdf-box"
   }
 };
 
