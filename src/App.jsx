@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Suspense, lazy, useState } from "react";
 import "./App.css";
 
 import Navbar from "./components/Navbar";
@@ -9,6 +9,8 @@ import Home from "./pages/Home";
 import Projects from "./pages/Projects";
 import Experience from "./pages/Experience";
 import Education from "./pages/Education";
+
+const CV = lazy(() => import("./pages/CV"));
 
 const pages = {
   "index.md": {
@@ -32,6 +34,12 @@ const pages = {
     name: "education.sh",
     language: "bash",
     component: Education
+  },
+  "cv.pdf": {
+    name: "cv.pdf",
+    language: "pdf",
+    component: CV,
+    icon: "󰈙"
   }
 };
 
@@ -57,7 +65,9 @@ export default function App() {
         />
 
         <Editor file={activePage}>
-          <ActiveComponent />
+          <Suspense fallback={<div className="page"><p>Loading viewer...</p></div>}>
+            <ActiveComponent />
+          </Suspense>
         </Editor>
       </div>
 

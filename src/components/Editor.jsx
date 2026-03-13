@@ -42,8 +42,13 @@ export default function Editor({ file, children }) {
     { y: 2, xOffset: 0, charWidth: 8.4, height: 22, textLength: 0, lineNumberHeight: 27 },
   ]);
   const contentRef = useRef(null);
+  const isPdfViewer = file.language === "pdf";
 
   useEffect(() => {
+    if (isPdfViewer) {
+      return undefined;
+    }
+
     if (!contentRef.current) return;
     const container = contentRef.current;
 
@@ -63,9 +68,13 @@ export default function Editor({ file, children }) {
     mo.observe(container, { subtree: true, childList: true, characterData: true });
 
     return () => mo.disconnect();
-  }, [children]);
+  }, [children, isPdfViewer]);
 
   useEffect(() => {
+    if (isPdfViewer) {
+      return undefined;
+    }
+
     const maxCol = (row) => {
       const len = linesData[row]?.textLength ?? 0;
       return Math.max(0, len - 1);
@@ -106,7 +115,7 @@ export default function Editor({ file, children }) {
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [linesData, cursor]);
+  }, [linesData, cursor, isPdfViewer]);
 
   const currentLine = linesData[cursor] ?? { y: 2, xOffset: 0, charWidth: 8.4, height: 22, textLength: 0, lineNumberHeight: 27 };
   const cursorX = currentLine.xOffset + column * currentLine.charWidth;
@@ -116,31 +125,35 @@ export default function Editor({ file, children }) {
     <main className="editor">
       <div className="editor-scroll-container">
         <div className="editor-content">
-          <div className="line-numbers">
-            {linesData.map((line, i) => {
-              const num = i === cursor ? i + 1 : Math.abs(cursor - i);
-              return (
-                <div
-                  key={i}
-                  className={`line-number ${i === cursor ? "active" : ""}`}
-                  style={{ height: `${line.lineNumberHeight}px`, lineHeight: `${line.lineNumberHeight}px` }}
-                >
-                  {num}
-                </div>
-              );
-            })}
-          </div>
+          {!isPdfViewer && (
+            <div className="line-numbers">
+              {linesData.map((line, i) => {
+                const num = i === cursor ? i + 1 : Math.abs(cursor - i);
+                return (
+                  <div
+                    key={i}
+                    className={`line-number ${i === cursor ? "active" : ""}`}
+                    style={{ height: `${line.lineNumberHeight}px`, lineHeight: `${line.lineNumberHeight}px` }}
+                  >
+                    {num}
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           <div className="editor-body" ref={contentRef}>
             {children}
-            <div
-              className="cursor"
-              style={{
-                transform: `translate(${cursorX}px, ${cursorY}px)`,
-                width: `${currentLine.charWidth}px`,
-                height: `${currentLine.height}px`,
-              }}
-            />
+            {!isPdfViewer && (
+              <div
+                className="cursor"
+                style={{
+                  transform: `translate(${cursorX}px, ${cursorY}px)`,
+                  width: `${currentLine.charWidth}px`,
+                  height: `${currentLine.height}px`,
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -151,7 +164,7 @@ export default function Editor({ file, children }) {
           <div className="status-item">{file.name}</div>
         </div>
         <div className="status-right">
-          <div className="status-item">{cursor + 1}:{column + 1}</div>
+          {!isPdfViewer && <div className="status-item">{cursor + 1}:{column + 1}</div>}
           <div className="status-item">{file.language}</div>
         </div>
       </div>

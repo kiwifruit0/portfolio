@@ -257,6 +257,90 @@ body {
 .card-tech   { color: var(--nord14); }
 .card-link   { color: var(--nord9); }
 
+/* CV viewer styles */
+.cv-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 6px;
+  padding-bottom: 18px;
+}
+
+.page.cv-page * {
+  line-height: normal;
+}
+
+.cv-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cv-toolbar-title {
+  color: var(--nord8);
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.cv-download-button {
+  color: var(--nord0);
+  background: var(--nord14);
+  border: 1px solid var(--nord14);
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: bold;
+  padding: 6px 10px;
+}
+
+.cv-download-button:hover {
+  background: #8cb079;
+}
+
+.cv-viewport {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cv-page-frame {
+  margin: 0 auto;
+  width: fit-content;
+  max-width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(46, 52, 64, 0.45);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+}
+
+.cv-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--nord3);
+  color: var(--nord7);
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+}
+
+.cv-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  background: #ffffff;
+}
+
+.cv-loading,
+.cv-error {
+  padding: 10px 12px;
+  color: var(--nord5);
+}
+
+.cv-error {
+  color: var(--nord11);
+}
+
 /* cursor styles */
 
 .cursor {
