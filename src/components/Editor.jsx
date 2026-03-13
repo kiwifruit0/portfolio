@@ -41,6 +41,7 @@ function buildLineData(container) {
     const maxChars = Math.max(1, Math.floor((container.clientWidth - xOffset - paddingRight) / charWidth));
 
     for (let rowIndex = 0; rowIndex < visualRows; rowIndex += 1) {
+      const showLineNumber = rowIndex === 0;
       const y = isWrappable
         ? el.offsetTop + rowIndex * lineHeight + Math.round((lineHeight - cursorHeight) / 2)
         : el.offsetTop + Math.round((elHeight - cursorHeight) / 2);
@@ -48,7 +49,15 @@ function buildLineData(container) {
         ? Math.min(rawLen, maxChars)
         : Math.max(0, Math.min(maxChars, rawLen - rowIndex * maxChars));
 
-      lines.push({ y, xOffset, charWidth, height: cursorHeight, textLength, lineNumberHeight: rowHeight });
+      lines.push({
+        y,
+        xOffset,
+        charWidth,
+        height: cursorHeight,
+        textLength,
+        lineNumberHeight: rowHeight,
+        showLineNumber
+      });
     }
   });
 
@@ -151,21 +160,27 @@ export default function Editor({ file, children }) {
   const cursorX = currentLine.xOffset + column * currentLine.charWidth;
   const cursorY = currentLine.y;
 
+  let logicalLine = 0;
   return (
     <main className="editor">
       <div className="editor-scroll-container">
         <div className="editor-content">
           {!isPdfViewer && (
             <div className="line-numbers">
+
               {linesData.map((line, i) => {
-                const num = i === cursor ? i + 1 : Math.abs(cursor - i);
+                if (line.showLineNumber) logicalLine += 1;
+
                 return (
                   <div
                     key={i}
                     className={`line-number ${i === cursor ? "active" : ""}`}
-                    style={{ height: `${line.lineNumberHeight}px`, lineHeight: `${line.lineNumberHeight}px` }}
+                    style={{
+                      height: `${line.lineNumberHeight}px`,
+                      lineHeight: `${line.lineNumberHeight}px`
+                    }}
                   >
-                    {num}
+                    {line.showLineNumber ? logicalLine : ""}
                   </div>
                 );
               })}
