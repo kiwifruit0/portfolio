@@ -9,46 +9,16 @@ export default function Projects() {
       <p className="blank"></p>
       <TwoColumnCards cards={[
         {
-          name: "neovim-portfolio",
-          desc: "Developer portfolio in Neovim style.",
-          tech: ["React", "Vite", "CSS"],
-          link: "github.com/tobyjennings/portfolio",
+          name: "1st-place-soton-ds-x-wecs-hackathon",
+          desc: "Built a location-aware full-stack app to gamify real-world activity with category stats, weighted rewards, and leaderboards.",
+          tech: ["React", "Python", "FastAPI", "REST API"],
+          link: "github.com/Ryan-Shino/WECSHackathonProject",
         },
         {
-          name: "kv-store",
-          desc: "what happens when you implement a distributed key-value store in Go using the Raft consensus algorithm? find out in this project.",
-          tech: ["Go", "Raft"],
-          link: "github.com/tobyjennings/kv-store",
-        },
-        {
-          name: "other project",
-          desc: "this is a long sentence i want to check if wrapping works correctly in the project card component.",
-          tech: ["Go", "Raft"],
-          link: "github.com/tobyjennings/kv-store",
-        },
-        {
-          name: "other project",
-          desc: "this is a long sentence i want to check if wrapping works correctly in the project card component.",
-          tech: ["Go", "Raft"],
-          link: "github.com/tobyjennings/kv-store",
-        },
-        {
-          name: "other project",
-          desc: "this is a long sentence i want to check if wrapping works correctly in the project card component.",
-          tech: ["Go", "Raft"],
-          link: "github.com/tobyjennings/kv-store",
-        },
-        {
-          name: "other project",
-          desc: "this is a long sentence i want to check if wrapping works correctly in the project card component.",
-          tech: ["Go", "Raft"],
-          link: "github.com/tobyjennings/kv-store",
-        },
-        {
-          name: "other project",
-          desc: "this is a long sentence i want to check if wrapping works correctly in the project card component.",
-          tech: ["Go", "Raft"],
-          link: "github.com/tobyjennings/kv-store",
+          name: "machine-learning-grade-predictor",
+          desc: "Predicted student grades from academic and non-academic features; achieved ~15% improvement over a baseline linear model.",
+          tech: ["Python", "Machine Learning", "Regression"],
+          link: "github.com/kiwifruit0/grade_predictor",
         }
       ]} />
 

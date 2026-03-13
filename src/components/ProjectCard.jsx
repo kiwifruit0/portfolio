@@ -5,7 +5,7 @@ const COL_GAP = 2;         // chars between the two columns
 const PADDING_LEFT  = 10;  // .editor-body padding-left  (px)
 const PADDING_RIGHT = 20;  // .editor-body padding-right (px) — must match CSS
 
-// Word-wrap a string to fit within `width` chars, returning one string per line.
+// word-wrap a string to fit within `width` chars, returning one string per line.
 function wrapText(text, width) {
   if (!text) return [""];
   const words = text.split(" ");
@@ -17,7 +17,7 @@ function wrapText(text, width) {
       line = candidate;
     } else {
       if (line) lines.push(line);
-      // Single word longer than width: hard-truncate
+      // single word longer than width: hard-truncate
       line = word.length > width ? word.slice(0, width - 3) + "..." : word;
     }
   }
@@ -25,15 +25,21 @@ function wrapText(text, width) {
   return lines.length ? lines : [""];
 }
 
-// Pad / truncate a string to exactly `width` chars.
-// Spaces preserved by white-space:pre on the row element.
+// pad / truncate a string to exactly `width` chars.
 function pad(str, width) {
   const s = str || "";
   if (s.length >= width) return s.slice(0, width - 3) + "...";
   return s + " ".repeat(width - s.length);
 }
 
-// Build the JSX rows for one card.
+// ensure a url has a scheme so it renders as a link and not plain text
+function normalizeUrl(url) {
+  if (!url) return "";
+  if (/^https?:\/\//i.test(url)) return url;
+  return `https://${url}`;
+}
+
+// build the jsx rows for one card.
 // descLineCount lets the caller normalise heights across a pair.
 function buildRows(props, W, descLineCount) {
   const INNER = W - 6;
@@ -44,7 +50,7 @@ function buildRows(props, W, descLineCount) {
   const linkStr = link ? `↗  ${link}` : "";
 
   const descLines = wrapText(desc, INNER);
-  // Pad to the shared target so both cards in a pair are the same height
+  // pad to the shared target so both cards in a pair are the same height
   while (descLines.length < descLineCount) descLines.push("");
 
   return [
@@ -59,14 +65,27 @@ function buildRows(props, W, descLineCount) {
     // │  [Tech]  [Tech]                        │
     <>{b("│  ")}<span className="card-tech">{pad(techStr, INNER)}</span>{b("  │")}</>,
     // │  ↗  link                               │
-    <>{b("│  ")}<span className="card-link">{pad(linkStr, INNER)}</span>{b("  │")}</>,
+    <>
+      {b("│  ")}
+      <span className="card-link">
+        {link ? (
+          <>
+            ↗  <a href={normalizeUrl(link)} target="_blank" rel="noopener noreferrer">{link}</a>
+            {" ".repeat(Math.max(0, INNER - link.length - 3))}
+          </>
+        ) : (
+          " ".repeat(INNER)
+        )}
+      </span>
+      {b("  │")}
+    </>,
     // ╰────────────────────────────────────────╯
     <>{b("╰" + "─".repeat(W - 2) + "╯")}</>,
   ];
 }
 
-// Renders cards in pairs as merged <p> rows so the cursor grid stays aligned.
-// Width is measured from the live DOM and updates on resize.
+// renders cards in pairs as merged <p> rows so the cursor grid stays aligned.
+// width is measured from the live dom and updates on resize.
 export default function TwoColumnCards({ cards = [] }) {
   const [editorWidth, setEditorWidth] = useState(0);
   const anchorRef = useRef(null);
@@ -81,7 +100,7 @@ export default function TwoColumnCards({ cards = [] }) {
     return () => ro.disconnect();
   }, []);
 
-  // Available chars between left-padding start and right-padding start
+  // available chars between left-padding start and right-padding start
   const availablePx = (editorWidth || 640) - PADDING_LEFT - PADDING_RIGHT;
   const W = Math.max(20, Math.floor((availablePx / CHAR_W - COL_GAP) / 2));
   const INNER = W - 6;
@@ -96,7 +115,7 @@ export default function TwoColumnCards({ cards = [] }) {
       {pairs.map((pair, pi) => {
         const [leftProps, rightProps] = pair;
 
-        // Determine shared desc line count for this pair
+        // determine shared desc line count for this pair
         const leftDescLines  = wrapText(leftProps.desc,  INNER).length;
         const rightDescLines = rightProps ? wrapText(rightProps.desc, INNER).length : 0;
         const descLineCount  = Math.max(leftDescLines, rightDescLines);

@@ -6,7 +6,7 @@ export default function Sidebar({ pages, activeFileName, onFileSelect }) {
     <aside className="sidebar">
 
       <div className="tree-header">
-        <Icon icon={"mdi:folder-multiple-outline"} width={18} /> ~/portfolio
+        <Icon icon={"mdi:folder-multiple-outline"} width={16} /> ~/portfolio
       </div>
 
       <ul className="tree-content">
