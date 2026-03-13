@@ -21,7 +21,7 @@ export default function Navbar({ pages, activeFileName, onNavigate }) {
         aria-expanded={isMenuOpen}
         aria-controls="primary-navigation"
       >
-        {isMenuOpen ? "Close" : "Menu"}
+        {isMenuOpen ? "close" : "menu"}
       </button>
 
       <div id="primary-navigation" className={`nav-links ${isMenuOpen ? "open" : ""}`}>

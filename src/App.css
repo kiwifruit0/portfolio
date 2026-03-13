@@ -1,29 +1,3 @@
-/* Nord Color Palette */
-/*
- * Copyright (c) 2016-present Sven Greb <development@svengreb.de>
- * This source code is licensed under the MIT license found in the license file.
- */
-
-/*
- * References:
- *   1. https://www.w3.org/TR/css-variables
- *   2. https://www.w3.org/TR/selectors/#root-pseudo
- *   3. https://drafts.csswg.org/css-variables
- *   4. https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables
- *   5. https://warpspire.com/kss
- *   6. https://github.com/kss-node/kss-node
- */
-
-/*
-An arctic, north-bluish color palette.
-Created for the clean- and minimal flat design pattern to achieve a optimal focus and readability for code syntax
-highlighting and UI.
-It consists of a total of sixteen, carefully selected, dimmed pastel colors for a eye-comfortable, but yet colorful
-ambiance.
-
-Styleguide Nord
-*/
-
 :root {
   --nord0: #2e3440;
   --nord1: #3b4252;
@@ -42,9 +16,9 @@ Styleguide Nord
   --nord14: #a3be8c;
   --nord15: #b48ead;
 
-  --container-max-width: 1200px;
-  --navbar-height: 60px;
-  --touch-target-size: 44px;
+  --container-max-width: 1480px;
+  --navbar-height: 54px;
+  --touch-target-size: 30px;
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 12px;
@@ -60,6 +34,7 @@ Styleguide Nord
 html, body, #root {
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -83,11 +58,12 @@ body {
 
 .app-container {
   width: 100%;
-  min-height: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
-  padding: clamp(var(--space-sm), 1.5vw, var(--space-lg));
+  gap: 6px;
+  padding: 6px clamp(10px, 1.2vw, 16px) 10px;
+  overflow: hidden;
 }
 
 /* navbar styles */
@@ -119,6 +95,7 @@ body {
   font-weight: bold;
   cursor: pointer;
   touch-action: manipulation;
+  font-family: inherit;
 }
 
 .nav-links {
@@ -159,7 +136,8 @@ body {
 
 .nvim-container {
   width: min(var(--container-max-width), 100%);
-  height: min(860px, calc(100vh - 120px));
+  height: calc(100vh - var(--navbar-height) - 28px);
+  max-height: 920px;
   margin: 0 auto;
   flex: 1;
   min-height: 0;
@@ -179,8 +157,8 @@ body {
 /* neo tree sidebar styles */
 
 .sidebar {
-  width: clamp(200px, 24vw, 250px);
-  min-width: 180px;
+  width: clamp(170px, 18vw, 210px);
+  min-width: 160px;
   border-right: 1px solid var(--nord1);
   display: flex;
   flex-direction: column;
@@ -216,7 +194,7 @@ body {
   font-size: 0.95rem;
   text-align: left;
   min-height: var(--touch-target-size);
-  padding: 8px 10px;
+  padding: 0px 8px;
   border-radius: 6px;
   cursor: pointer;
   display: flex;
@@ -244,6 +222,8 @@ body {
   flex: 1;
   overflow-y: auto;
   padding: 20px 0;
+  min-height: 0;
+  overscroll-behavior: contain;
 }
 
 .editor-content {
@@ -330,7 +310,8 @@ body {
   gap: 16px;
   padding-top: 6px;
   padding-bottom: 18px;
-  width: min(100%, 980px);
+  width: 100%;
+  max-width: 980px;
   margin: 0 auto;
 }
 
@@ -376,6 +357,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 18px;
+  width: 100%;
 }
 
 .cv-page-frame {
@@ -554,7 +536,7 @@ body {
 
   .nvim-container {
     width: 100%;
-    height: calc(100vh - 105px);
+    height: calc(100vh - 100px);
   }
 
   .sidebar {
@@ -646,10 +628,19 @@ body {
 
   .page h1 {
     font-size: 1.45rem;
+    height: auto;
+    display: block;
+    line-height: 1.35;
+    padding: 2px 0;
   }
 
   .page h3 {
     font-size: 1rem;
+    height: auto;
+    display: block;
+    line-height: 1.4;
+    white-space: normal;
+    padding: 2px 0;
   }
 
   .cv-toolbar {

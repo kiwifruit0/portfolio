@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useState } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import "./App.css";
 
 import Navbar from "./components/Navbar";
@@ -50,6 +50,25 @@ export default function App() {
 
   const activePage = pages[activeFileName];
   const ActiveComponent = activePage.component;
+
+  useEffect(() => {
+    const handleDesktopWheel = (event) => {
+      if (window.innerWidth < 1024 || event.ctrlKey) {
+        return;
+      }
+
+      const scrollContainer = document.querySelector(".editor-scroll-container");
+      if (!(scrollContainer instanceof HTMLElement)) {
+        return;
+      }
+
+      event.preventDefault();
+      scrollContainer.scrollBy({ top: event.deltaY, left: 0 });
+    };
+
+    window.addEventListener("wheel", handleDesktopWheel, { passive: false });
+    return () => window.removeEventListener("wheel", handleDesktopWheel);
+  }, []);
 
   return (
     <div className="app-container">

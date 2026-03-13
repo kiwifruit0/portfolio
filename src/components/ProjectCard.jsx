@@ -35,6 +35,13 @@ function pad(str, width) {
   return s + " ".repeat(width - s.length);
 }
 
+function truncate(str, width) {
+  const s = str || "";
+  if (width <= 0) return "";
+  if (s.length <= width) return s;
+  return width > 3 ? `${s.slice(0, width - 3)}...` : s.slice(0, width);
+}
+
 // ensure a url has a scheme so it renders as a link and not plain text
 function normalizeUrl(url) {
   if (!url) return "";
@@ -53,6 +60,9 @@ function buildRows(props, W, descLineCount) {
   const titleDashes = Math.max(1, W - displayName.length - 5);
   const techStr = tech.map((t) => `[${t}]`).join("  ");
   const linkPrefix = "↗  ";
+  const linkWidth = Math.max(0, INNER - linkPrefix.length);
+  const displayLink = truncate(link, linkWidth);
+  const linkPadding = " ".repeat(Math.max(0, linkWidth - displayLink.length));
 
   const descLines = wrapText(desc, INNER);
   // pad to the shared target so both cards in a pair are the same height
@@ -75,8 +85,7 @@ function buildRows(props, W, descLineCount) {
       <span className="card-link">
         {link ? (
           <>
-            {linkPrefix}<a href={normalizeUrl(link)} target="_blank" rel="noopener noreferrer">{link}</a>
-            {" ".repeat(Math.max(0, INNER - link.length - linkPrefix.length))}
+            {linkPrefix}<a href={normalizeUrl(link)} target="_blank" rel="noopener noreferrer">{displayLink}</a>{linkPadding}
           </>
         ) : (
           " ".repeat(INNER)
@@ -107,7 +116,8 @@ export default function TwoColumnCards({ cards = [] }) {
 
   // available chars between left-padding start and right-padding start
   const availablePx = Math.max(320, (editorWidth || 640) - PADDING_LEFT - PADDING_RIGHT);
-  const isSingleColumn = availablePx < 960;
+  const isDesktopViewport = typeof window !== "undefined" && window.innerWidth >= 1024;
+  const isSingleColumn = !isDesktopViewport && availablePx < 960;
   const W = isSingleColumn
     ? Math.max(30, Math.floor(availablePx / CHAR_W) - 2)
     : Math.max(20, Math.floor((availablePx / CHAR_W - COL_GAP) / 2));
@@ -176,4 +186,3 @@ export default function TwoColumnCards({ cards = [] }) {
     </>
   );
 }
-
