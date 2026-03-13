@@ -264,6 +264,8 @@ body {
   gap: 16px;
   padding-top: 6px;
   padding-bottom: 18px;
+  width: min(100%, 980px);
+  margin: 0 auto;
 }
 
 .page.cv-page * {
@@ -300,6 +302,7 @@ body {
 .cv-viewport {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 18px;
 }
 
