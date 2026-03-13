@@ -5,24 +5,36 @@ export default function Home() {
       <h1>Toby Jennings</h1>
 
       <p>
-        Penultimate year Computer Science BSc student at the University of Southampton
-        with strong foundations in algorithms, systems programming, and data engineering.
+        Hi, I'm Toby. I'm a penultimate-year Computer Science BSc student at the University of Southampton.
+        I like building things that are practical, and (ideally) actually fun to use.
       </p>
 
+      <p className="blank"></p>
+
       <p>
-        Recently completed a Junior Data Engineer internship at Technicus Ltd, where
-        I built and improved ETL and data migration workflows.
+        Recently I interned as a Junior Data Engineer at Technicus (London), where I helped turn a very manual
+        data-migration workflow into something automated and more reliable; including cutting an ETL process
+        from around 40 steps down to 11.
       </p>
+
+      <p className="blank"></p>
 
       <p>
         Current focus
       </p>
 
       <ul>
-        <li>Production-ready ETL and data workflows in Python and SQL</li>
-        <li>Full-stack applications with React and FastAPI</li>
-        <li>Systems programming with Linux, C, and C++</li>
+        <li>Low-level/systems stuff on Linux (C/C++, OS + networking fundamentals)</li>
+        <li>Tinkering with embedded projects on ESP32 when I want a break from the laptop</li>
+        <li>Full-stack projects with React + FastAPI (REST APIs, real-world integrations)</li>
       </ul>
+
+      <p className="blank"></p>
+
+      <p>
+        Outside of uni/work you'll probably find me playing guitar (or fixing old ones), making music in Ableton,
+        playing volleyball, or messing with microcontrollers.
+      </p>
 
     </div>
   );
