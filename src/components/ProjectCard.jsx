@@ -116,12 +116,43 @@ export default function TwoColumnCards({ cards = [] }) {
 
   // available chars between left-padding start and right-padding start
   const availablePx = Math.max(320, (editorWidth || 640) - PADDING_LEFT - PADDING_RIGHT);
+  const isMobileViewport = typeof window !== "undefined" && window.innerWidth <= 767;
   const isDesktopViewport = typeof window !== "undefined" && window.innerWidth >= 1024;
   const isSingleColumn = !isDesktopViewport && availablePx < 960;
   const W = isSingleColumn
     ? Math.max(30, Math.floor(availablePx / CHAR_W) - 2)
     : Math.max(20, Math.floor((availablePx / CHAR_W - COL_GAP) / 2));
   const INNER = W - 6;
+
+  if (isMobileViewport) {
+    return (
+      <div className="mobile-project-list">
+        {cards.map((card, cardIndex) => (
+          <section
+            key={card.name}
+            className="mobile-project-section"
+            ref={cardIndex === 0 ? anchorRef : null}
+          >
+            <h3 className="mobile-project-heading">{card.name}</h3>
+            <p className="mobile-project-body">{card.desc}</p>
+            <p className="mobile-project-skills">{card.tech.map((t) => `[${t}]`).join(" ")}</p>
+            {card.link && (
+              <p className="mobile-project-link">
+                <a
+                  href={normalizeUrl(card.link)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={card.link}
+                >
+                  {card.link}
+                </a>
+              </p>
+            )}
+          </section>
+        ))}
+      </div>
+    );
+  }
 
   if (isSingleColumn) {
     return (
