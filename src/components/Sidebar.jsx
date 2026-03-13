@@ -13,15 +13,19 @@ export default function Sidebar({ pages, activeFileName, onFileSelect }) {
         {Object.keys(pages).map((file) => {
           const page = pages[file];
           const icon = page && page.icon ? page.icon : DEFAULT_ICON;
+          const isActive = file === activeFileName;
           return (
-          <li
-            key={file}
-            className={`tree-item ${file === activeFileName ? "active" : ""}`}
-            onClick={() => onFileSelect(file)}
-          >
-          <Icon icon={pages[file].icon} width={18}/> {file}
-          </li>
-        );
+            <li key={file}>
+              <button
+                type="button"
+                className={`tree-item ${isActive ? "active" : ""}`}
+                onClick={() => onFileSelect(file)}
+                aria-current={isActive ? "page" : undefined}
+              >
+                <Icon icon={icon} width={18}/> {file}
+              </button>
+            </li>
+          );
         })}
       </ul>
 

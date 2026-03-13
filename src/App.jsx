@@ -56,6 +56,7 @@ export default function App() {
 
       <Navbar
         pages={Object.keys(pages)}
+        activeFileName={activeFileName}
         onNavigate={setActiveFileName}
       />
 

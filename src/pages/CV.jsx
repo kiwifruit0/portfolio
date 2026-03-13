@@ -6,7 +6,7 @@ import cvPdfUrl from "../assets/Toby_Jennings_CV.pdf?url";
 
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
-const MIN_RENDER_WIDTH = 420;
+const MIN_RENDER_WIDTH = 260;
 const PAGE_SIDE_PADDING = 40;
 
 export default function CV() {
@@ -74,7 +74,8 @@ export default function CV() {
 
     async function renderPages() {
       try {
-        const availableWidth = Math.max(MIN_RENDER_WIDTH, renderWidth - PAGE_SIDE_PADDING);
+        const sidePadding = renderWidth <= 520 ? 16 : PAGE_SIDE_PADDING;
+        const availableWidth = Math.max(MIN_RENDER_WIDTH, renderWidth - sidePadding);
 
         for (let pageNumber = 1; pageNumber <= pdfDoc.numPages; pageNumber += 1) {
           const page = await pdfDoc.getPage(pageNumber);
@@ -141,7 +142,7 @@ export default function CV() {
       </div>
 
       <div className="cv-viewport" ref={viewportRef}>
-        {error && <p classname="cv-error">{error}</p>}
+        {error && <p className="cv-error">{error}</p>}
         {!error && isLoading && <p className="cv-loading">Rendering cv...</p>}
 
         {!error &&

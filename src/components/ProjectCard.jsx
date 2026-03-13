@@ -28,7 +28,10 @@ function wrapText(text, width) {
 // pad / truncate a string to exactly `width` chars.
 function pad(str, width) {
   const s = str || "";
-  if (s.length >= width) return s.slice(0, width - 3) + "...";
+  if (width <= 0) return "";
+  if (s.length > width) {
+    return width > 3 ? s.slice(0, width - 3) + "..." : s.slice(0, width);
+  }
   return s + " ".repeat(width - s.length);
 }
 
@@ -45,9 +48,11 @@ function buildRows(props, W, descLineCount) {
   const INNER = W - 6;
   const { name, desc, tech = [], link = "" } = props;
   const b = (s) => <span className="card-border">{s}</span>;
-  const titleDashes = Math.max(1, W - name.length - 5);
+  const maxNameLength = Math.max(4, W - 8);
+  const displayName = pad(name, maxNameLength).trimEnd();
+  const titleDashes = Math.max(1, W - displayName.length - 5);
   const techStr = tech.map((t) => `[${t}]`).join("  ");
-  const linkStr = link ? `↗  ${link}` : "";
+  const linkPrefix = "↗  ";
 
   const descLines = wrapText(desc, INNER);
   // pad to the shared target so both cards in a pair are the same height
@@ -55,7 +60,7 @@ function buildRows(props, W, descLineCount) {
 
   return [
     // ╭─ name ─────────────────────────────────╮
-    <>{b("╭─ ")}<span className="card-name">{name}</span>{b(" " + "─".repeat(titleDashes) + "╮")}</>,
+    <>{b("╭─ ")}<span className="card-name">{displayName}</span>{b(" " + "─".repeat(titleDashes) + "╮")}</>,
     // ├────────────────────────────────────────┤
     <>{b("├" + "─".repeat(W - 2) + "┤")}</>,
     // │  description line(s)                   │
@@ -70,8 +75,8 @@ function buildRows(props, W, descLineCount) {
       <span className="card-link">
         {link ? (
           <>
-            ↗  <a href={normalizeUrl(link)} target="_blank" rel="noopener noreferrer">{link}</a>
-            {" ".repeat(Math.max(0, INNER - link.length - 3))}
+            {linkPrefix}<a href={normalizeUrl(link)} target="_blank" rel="noopener noreferrer">{link}</a>
+            {" ".repeat(Math.max(0, INNER - link.length - linkPrefix.length))}
           </>
         ) : (
           " ".repeat(INNER)
@@ -101,9 +106,37 @@ export default function TwoColumnCards({ cards = [] }) {
   }, []);
 
   // available chars between left-padding start and right-padding start
-  const availablePx = (editorWidth || 640) - PADDING_LEFT - PADDING_RIGHT;
-  const W = Math.max(20, Math.floor((availablePx / CHAR_W - COL_GAP) / 2));
+  const availablePx = Math.max(320, (editorWidth || 640) - PADDING_LEFT - PADDING_RIGHT);
+  const isSingleColumn = availablePx < 960;
+  const W = isSingleColumn
+    ? Math.max(30, Math.floor(availablePx / CHAR_W) - 2)
+    : Math.max(20, Math.floor((availablePx / CHAR_W - COL_GAP) / 2));
   const INNER = W - 6;
+
+  if (isSingleColumn) {
+    return (
+      <>
+        {cards.map((card, cardIndex) => {
+          const descLineCount = wrapText(card.desc, INNER).length;
+          const rows = buildRows(card, W, descLineCount);
+          return (
+            <Fragment key={card.name}>
+              {cardIndex > 0 && <p className="blank"></p>}
+              {rows.map((row, rowIndex) => (
+                <p
+                  key={rowIndex}
+                  className="card-row"
+                  ref={cardIndex === 0 && rowIndex === 0 ? anchorRef : null}
+                >
+                  {row}
+                </p>
+              ))}
+            </Fragment>
+          );
+        })}
+      </>
+    );
+  }
 
   const pairs = [];
   for (let i = 0; i < cards.length; i += 2) {
@@ -143,5 +176,4 @@ export default function TwoColumnCards({ cards = [] }) {
     </>
   );
 }
-
 
