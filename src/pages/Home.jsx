@@ -25,8 +25,8 @@ export default function Home() {
 
       <ul>
         <li>Low-level/systems stuff on Linux (C/C++, OS + networking fundamentals)</li>
-        <li>Tinkering with embedded projects on ESP32 when I want a break from the laptop</li>
-        <li>Full-stack projects with React + FastAPI (REST APIs, real-world integrations)</li>
+        <li>Tinkering with embedded projects</li>
+        <li>Winning hackathons</li>
       </ul>
 
       <p className="blank"></p>

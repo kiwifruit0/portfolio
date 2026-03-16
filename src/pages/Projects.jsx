@@ -4,7 +4,7 @@ export default function Projects() {
   return (
     <div className="page">
 
-      <h1>Projects</h1>
+      <h1>Projects and Achievements</h1>
 
       <p>
         I like building projects that solve real problems and get used by real people.
@@ -15,9 +15,15 @@ export default function Projects() {
       <TwoColumnCards
         cards={[
           {
-            name: "1st place — Soton Data Science x WECS Hackathon",
-            desc: "Built a location-aware full-stack app that turns going outside into a game: category-based stats, weighted rewards, and leaderboards. I worked on the React frontend + API integration, plus the geolocation + Mapbox place classification.",
-            tech: ["React", "Tailwind", "Python", "FastAPI", "Mapbox", "REST API"],
+            name: "1st place - ElevenLabs track at SotonHack 2026",
+            desc: "Voice-based social media that joins the semi-anonymous forum style of Reddit and Quora with the daily interaction between friends seen in BeReal. Won the \"Best use of ElevenLabs\" track with our voice assistant.",
+            tech: ["React", "Python", "FastAPI", "Gemini API", "MongoDB"],
+            link: "github.com/kiwifruit0/Echo",
+          },
+          {
+            name: "1st place - Soton Data Science x WECS Hackathon 2026",
+            desc: "Location-aware, full stack app that turns going outside into a game with category-based stats and leaderboards. I worked on the API integration, as well as the geolocation + Mapbox place classification.",
+            tech: ["React", "Tailwind", "Python", "FastAPI", "REST API"],
             link: "github.com/Ryan-Shino/WECSHackathonProject",
           },
           {
