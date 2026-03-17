@@ -369,6 +369,91 @@ body::before {
   text-decoration: underline;
 }
 
+/* contact page styles */
+.contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 760px;
+}
+
+.contact-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: rgba(46, 52, 64, 0.55);
+  border: 1px solid rgba(76, 86, 106, 0.9);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.contact-item-main {
+  width: 100%;
+  padding-right: 92px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.contact-item-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.contact-label {
+  color: var(--nord8);
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contact-value {
+  color: var(--nord6);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.contact-value:hover {
+  color: var(--nord8);
+  text-decoration: underline;
+}
+
+.contact-action {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--nord0);
+  background: var(--nord9);
+  border: 1px solid var(--nord9);
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.78rem;
+  line-height: 1;
+  padding: 5px 11px;
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.contact-action:hover {
+  background: var(--nord8);
+  border-color: var(--nord8);
+}
+
 /* CV viewer styles */
 .cv-page {
   display: flex;
@@ -757,6 +842,37 @@ body::before {
   .page .mobile-project-heading {
     font-size: 0.95rem;
     font-weight: bold;
+  }
+
+  .contact-item {
+    gap: 6px;
+    padding: 10px 11px;
+  }
+
+  .contact-item-main {
+    padding-right: 0;
+    gap: 3px;
+  }
+
+  .contact-item-header {
+    justify-content: space-between;
+  }
+
+  .contact-label {
+    min-width: auto;
+  }
+
+  .contact-value {
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+
+  .contact-action {
+    position: static;
+    transform: none;
+    font-size: 0.74rem;
+    padding: 4px 9px;
+    min-height: 22px;
   }
 
   .cv-toolbar {

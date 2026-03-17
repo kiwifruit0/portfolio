@@ -6,6 +6,7 @@ import Sidebar from "./components/Sidebar";
 import Editor from "./components/Editor";
 
 import Home from "./pages/Home";
+import Contact from "./pages/Contact";
 import Projects from "./pages/Projects";
 import Experience from "./pages/Experience";
 import Education from "./pages/Education";
@@ -42,6 +43,12 @@ const pages = {
     language: "pdf",
     component: CV,
     icon: "mdi:file-pdf-box"
+  },
+  "contact.java": {
+    name: "contact.java",
+    language: "java",
+    component: Contact,
+    icon: "mdi:card-account-phone-outline"
   }
 };
 
