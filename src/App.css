@@ -393,6 +393,7 @@ body::before {
 
 .contact-item-main {
   width: 100%;
+  padding-left: 6px;
   padding-right: 92px;
   min-width: 0;
   display: flex;
@@ -435,7 +436,7 @@ body::before {
   transform: translateY(-50%);
   color: var(--nord0);
   background: var(--nord9);
-  border: 1px solid var(--nord9);
+  border: 5px solid var(--nord9);
   border-radius: 6px;
   text-decoration: none;
   font-weight: bold;
@@ -850,6 +851,7 @@ body::before {
   }
 
   .contact-item-main {
+    padding-left: 0;
     padding-right: 0;
     gap: 3px;
   }
