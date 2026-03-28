@@ -93,7 +93,11 @@ export default function App() {
           onFileSelect={setActiveFileName}
         />
 
-        <Editor file={activePage}>
+        <Editor 
+          file={activePage}
+          onNavigate={setActiveFileName}
+          availableFiles={Object.keys(pages)}
+        >
           <Suspense fallback={<div className="page"><p>Loading viewer...</p></div>}>
             <ActiveComponent />
           </Suspense>

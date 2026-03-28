@@ -651,6 +651,39 @@ body::before {
   color: var(--nord4);
 }
 
+.status-message.help {
+  color: var(--nord4);
+  height: auto;
+  padding: 8px 10px;
+}
+
+.help-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.status-search-info {
+  color: var(--nord13);
+  font-style: italic;
+}
+
+/* Search highlighting */
+
+.search-highlight {
+  background: var(--nord13);
+  color: var(--nord0);
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+.search-highlight.current {
+  background: var(--nord12);
+  outline: 2px solid var(--nord12);
+}
+
 .nav-link:focus-visible,
 .nav-menu-toggle:focus-visible,
 .tree-item:focus-visible,

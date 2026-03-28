@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useCommandLine } from "./CommandLine";
 
 const DEFAULT_LINE = { y: 2, xOffset: 0, charWidth: 8.4, height: 22, textLength: 0, lineNumberHeight: 27 };
@@ -57,7 +57,8 @@ function buildLineData(container) {
         height: cursorHeight,
         textLength,
         lineNumberHeight: rowHeight,
-        showLineNumber
+        showLineNumber,
+        element: el
       });
     }
   });
@@ -65,22 +66,96 @@ function buildLineData(container) {
   return lines.length > 0 ? lines : [DEFAULT_LINE];
 }
 
-export default function Editor({ file, children }) {
+// Highlight search matches in the editor content
+function highlightMatches(container, query) {
+  // Remove existing highlights
+  container.querySelectorAll(".search-highlight").forEach((el) => {
+    const parent = el.parentNode;
+    parent.replaceChild(document.createTextNode(el.textContent), el);
+    parent.normalize();
+  });
+
+  if (!query) return [];
+
+  const matches = [];
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null);
+  const nodesToProcess = [];
+
+  while (walker.nextNode()) {
+    nodesToProcess.push(walker.currentNode);
+  }
+
+  nodesToProcess.forEach((textNode) => {
+    const text = textNode.textContent;
+    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
+    
+    if (regex.test(text)) {
+      const span = document.createElement("span");
+      span.innerHTML = text.replace(regex, '<mark class="search-highlight">$1</mark>');
+      textNode.parentNode.replaceChild(span, textNode);
+      
+      span.querySelectorAll(".search-highlight").forEach((mark) => {
+        matches.push(mark);
+      });
+    }
+  });
+
+  return matches;
+}
+
+export default function Editor({ file, children, onNavigate, availableFiles }) {
   const [cursor, setCursor] = useState(0);
   const [column, setColumn] = useState(0);
   const [linesData, setLinesData] = useState([DEFAULT_LINE]);
+  const [pendingG, setPendingG] = useState(false);
   const contentRef = useRef(null);
   const isPdfViewer = file.language === "pdf";
   
   const {
-    isCommandMode,
+    mode,
     command,
     message,
     messageType,
     inputRef,
     handleSubmit,
-    handleChange
-  } = useCommandLine(file.name);
+    handleChange,
+    searchQuery,
+    setSearchMatches,
+    currentMatchIndex,
+    setCurrentMatchIndex,
+    clearSearch
+  } = useCommandLine(file.name, { onNavigate, availableFiles });
+
+  // Handle search highlighting
+  useEffect(() => {
+    if (!contentRef.current || isPdfViewer) return;
+
+    const matches = highlightMatches(contentRef.current, searchQuery);
+    setSearchMatches(matches);
+    
+    if (matches.length > 0) {
+      setCurrentMatchIndex(0);
+    }
+  }, [searchQuery, children, isPdfViewer, setSearchMatches, setCurrentMatchIndex]);
+
+  // Scroll to current match
+  useEffect(() => {
+    if (!contentRef.current || isPdfViewer) return;
+
+    const highlights = contentRef.current.querySelectorAll(".search-highlight");
+    highlights.forEach((el, i) => {
+      el.classList.toggle("current", i === currentMatchIndex);
+    });
+
+    if (highlights[currentMatchIndex]) {
+      highlights[currentMatchIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [currentMatchIndex, isPdfViewer]);
+
+  // Clear search when changing files
+  useEffect(() => {
+    clearSearch();
+  }, [file.name, clearSearch]);
 
   useEffect(() => {
     if (isPdfViewer) {
@@ -93,8 +168,9 @@ export default function Editor({ file, children }) {
     // Full reset when the page changes
     const data = buildLineData(container);
     setLinesData(data);
-    setCursor(data.length - 1);
-    setColumn(0);
+    const lastLineIndex = data.length - 1;
+    setCursor(lastLineIndex);
+    setColumn(maxColumnForLine(data[lastLineIndex]));
 
     const refreshLineData = () => {
       const updated = buildLineData(container);
@@ -121,8 +197,19 @@ export default function Editor({ file, children }) {
     };
   }, [children, isPdfViewer]);
 
+  const jumpToTop = useCallback(() => {
+    setCursor(0);
+    setColumn(0);
+  }, []);
+
+  const jumpToBottom = useCallback(() => {
+    const lastLine = linesData.length - 1;
+    setCursor(lastLine);
+    setColumn(maxColumnForLine(linesData[lastLine]));
+  }, [linesData]);
+
   useEffect(() => {
-    if (isPdfViewer) {
+    if (isPdfViewer || mode !== "normal") {
       return undefined;
     }
 
@@ -131,6 +218,38 @@ export default function Editor({ file, children }) {
     };
 
     const handleKey = (e) => {
+      const target = e.target;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
+        return;
+      }
+
+      // Handle gg (go to top)
+      if (e.key === "g") {
+        if (pendingG) {
+          e.preventDefault();
+          jumpToTop();
+          setPendingG(false);
+          return;
+        } else {
+          setPendingG(true);
+          setTimeout(() => setPendingG(false), 500);
+          return;
+        }
+      }
+
+      // Handle G (go to bottom)
+      if (e.key === "G" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        jumpToBottom();
+        setPendingG(false);
+        return;
+      }
+
+      // Reset pending g if another key is pressed
+      if (pendingG && e.key !== "g") {
+        setPendingG(false);
+      }
+
       if (["h", "j", "k", "l", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
         e.preventDefault();
       }
@@ -165,7 +284,7 @@ export default function Editor({ file, children }) {
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [linesData, cursor, isPdfViewer]);
+  }, [linesData, cursor, isPdfViewer, mode, pendingG, jumpToTop, jumpToBottom]);
 
   const currentLine = linesData[cursor] ?? DEFAULT_LINE;
   const cursorX = currentLine.xOffset + column * currentLine.charWidth;
@@ -175,6 +294,18 @@ export default function Editor({ file, children }) {
     const next = line.showLineNumber ? previous + 1 : previous;
     return [...numbers, next];
   }, []);
+
+  const getModeDisplay = () => {
+    if (mode === "command") return "COMMAND";
+    if (mode === "search") return "SEARCH";
+    return "NORMAL";
+  };
+
+  const getPrompt = () => {
+    if (mode === "command") return ":";
+    if (mode === "search") return "/";
+    return "";
+  };
 
   return (
     <main className="editor">
@@ -214,9 +345,9 @@ export default function Editor({ file, children }) {
       </div>
 
       <div className="status-line">
-        {isCommandMode ? (
+        {(mode === "command" || mode === "search") ? (
           <form onSubmit={handleSubmit} className="status-command-form">
-            <span className="status-command-prompt">:</span>
+            <span className="status-command-prompt">{getPrompt()}</span>
             <input
               ref={inputRef}
               type="text"
@@ -229,13 +360,18 @@ export default function Editor({ file, children }) {
           </form>
         ) : message ? (
           <div className={`status-message ${messageType}`}>
-            {message}
+            {messageType === "help" ? <pre className="help-text">{message}</pre> : message}
           </div>
         ) : (
           <>
             <div className="status-left">
-              <div className="status-mode">NORMAL</div>
+              <div className="status-mode">{getModeDisplay()}</div>
               <div className="status-item">{file.name}</div>
+              {searchQuery && (
+                <div className="status-item status-search-info">
+                  /{searchQuery}
+                </div>
+              )}
             </div>
             <div className="status-right">
               {!isPdfViewer && <div className="status-item">{cursor + 1}:{column + 1}</div>}
