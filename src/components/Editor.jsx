@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useCommandLine } from "./CommandLine";
 
 const DEFAULT_LINE = { y: 2, xOffset: 0, charWidth: 8.4, height: 22, textLength: 0, lineNumberHeight: 27 };
 
@@ -70,6 +71,16 @@ export default function Editor({ file, children }) {
   const [linesData, setLinesData] = useState([DEFAULT_LINE]);
   const contentRef = useRef(null);
   const isPdfViewer = file.language === "pdf";
+  
+  const {
+    isCommandMode,
+    command,
+    message,
+    messageType,
+    inputRef,
+    handleSubmit,
+    handleChange
+  } = useCommandLine(file.name);
 
   useEffect(() => {
     if (isPdfViewer) {
@@ -203,14 +214,35 @@ export default function Editor({ file, children }) {
       </div>
 
       <div className="status-line">
-        <div className="status-left">
-          <div className="status-mode">NORMAL</div>
-          <div className="status-item">{file.name}</div>
-        </div>
-        <div className="status-right">
-          {!isPdfViewer && <div className="status-item">{cursor + 1}:{column + 1}</div>}
-          <div className="status-item">{file.language}</div>
-        </div>
+        {isCommandMode ? (
+          <form onSubmit={handleSubmit} className="status-command-form">
+            <span className="status-command-prompt">:</span>
+            <input
+              ref={inputRef}
+              type="text"
+              value={command}
+              onChange={handleChange}
+              className="status-command-input"
+              autoComplete="off"
+              spellCheck="false"
+            />
+          </form>
+        ) : message ? (
+          <div className={`status-message ${messageType}`}>
+            {message}
+          </div>
+        ) : (
+          <>
+            <div className="status-left">
+              <div className="status-mode">NORMAL</div>
+              <div className="status-item">{file.name}</div>
+            </div>
+            <div className="status-right">
+              {!isPdfViewer && <div className="status-item">{cursor + 1}:{column + 1}</div>}
+              <div className="status-item">{file.language}</div>
+            </div>
+          </>
+        )}
       </div>
     </main>
   );

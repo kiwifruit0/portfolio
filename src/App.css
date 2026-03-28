@@ -602,6 +602,55 @@ body::before {
   color: var(--nord4);
 }
 
+/* Status line command mode styles */
+
+.status-command-form {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 4px;
+  height: 100%;
+}
+
+.status-command-prompt {
+  color: var(--nord4);
+  font-weight: bold;
+}
+
+.status-command-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--nord4);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  padding: 0;
+  height: 100%;
+}
+
+.status-message {
+  width: 100%;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.status-message.success {
+  color: var(--nord4);
+}
+
+.status-message.error {
+  color: var(--nord11);
+  background: rgba(191, 97, 106, 0.15);
+}
+
+.status-message.mixed {
+  color: var(--nord4);
+}
+
 .nav-link:focus-visible,
 .nav-menu-toggle:focus-visible,
 .tree-item:focus-visible,
@@ -807,6 +856,10 @@ body::before {
 
   .status-item {
     padding: 0 6px;
+  }
+
+  .status-command-input {
+    font-size: 0.78rem;
   }
 
   .page h1 {
