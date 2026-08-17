@@ -6,7 +6,12 @@
      --nord10    deep blue --nord11 red               --nord12 orange
      --nord13    yellow    --nord14 green             --nord15 purple
      --page-bg   the backdrop behind the floating editor
-     --backdrop  a decorative layer painted over --page-bg
+
+   Each theme gets its own copy of the backdrop wallpaper. The artwork is
+   six-colour indexed pixel art, so scripts/build-backdrops.py recolours it by
+   swapping the palette - exact, and free at runtime. Re-run that script after
+   adding a theme.
+     --backdrop  the wallpaper for this colorscheme
 */
 
 :root,
@@ -30,7 +35,6 @@
 
   --page-bg: #1a1b26;
   --backdrop: url("assets/nord-pixel.png");
-  --backdrop-size: cover;
   --backdrop-opacity: 1;
   --shell-alpha: 0.75;
   --shot-bg: #262c38;
@@ -55,9 +59,7 @@
   --nord15: #bb9af7;
 
   --page-bg: #101014;
-  --backdrop: radial-gradient(120% 90% at 15% 0%, rgba(122, 162, 247, 0.24), transparent 55%),
-    radial-gradient(100% 80% at 90% 100%, rgba(187, 154, 247, 0.22), transparent 55%);
-  --backdrop-size: cover;
+  --backdrop: url("assets/backdrops/tokyonight.png");
   --backdrop-opacity: 1;
   --shell-alpha: 0.82;
   --shot-bg: #1b1e2e;
@@ -82,9 +84,7 @@
   --nord15: #d3869b;
 
   --page-bg: #1d2021;
-  --backdrop: radial-gradient(120% 90% at 12% 0%, rgba(215, 153, 33, 0.2), transparent 55%),
-    radial-gradient(110% 85% at 88% 100%, rgba(104, 157, 106, 0.18), transparent 55%);
-  --backdrop-size: cover;
+  --backdrop: url("assets/backdrops/gruvbox.png");
   --backdrop-opacity: 1;
   --shell-alpha: 0.84;
   --shot-bg: #32302f;
@@ -109,9 +109,7 @@
   --nord15: #cba6f7;
 
   --page-bg: #11111b;
-  --backdrop: radial-gradient(120% 90% at 18% 0%, rgba(203, 166, 247, 0.24), transparent 55%),
-    radial-gradient(100% 80% at 85% 100%, rgba(137, 180, 250, 0.2), transparent 55%);
-  --backdrop-size: cover;
+  --backdrop: url("assets/backdrops/catppuccin.png");
   --backdrop-opacity: 1;
   --shell-alpha: 0.82;
   --shot-bg: #1e2030;
@@ -136,9 +134,7 @@
   --nord15: #c4a7e7;
 
   --page-bg: #191724;
-  --backdrop: radial-gradient(120% 90% at 15% 0%, rgba(196, 167, 231, 0.22), transparent 55%),
-    radial-gradient(100% 80% at 88% 100%, rgba(235, 111, 146, 0.16), transparent 55%);
-  --backdrop-size: cover;
+  --backdrop: url("assets/backdrops/rose-pine.png");
   --backdrop-opacity: 1;
   --shell-alpha: 0.82;
   --shot-bg: #2a273f;
@@ -163,9 +159,7 @@
   --nord15: #d699b6;
 
   --page-bg: #232a2e;
-  --backdrop: radial-gradient(120% 90% at 15% 0%, rgba(167, 192, 128, 0.18), transparent 55%),
-    radial-gradient(100% 80% at 88% 100%, rgba(127, 187, 179, 0.16), transparent 55%);
-  --backdrop-size: cover;
+  --backdrop: url("assets/backdrops/everforest.png");
   --backdrop-opacity: 1;
   --shell-alpha: 0.84;
   --shot-bg: #343f44;
@@ -190,10 +184,8 @@
   --nord15: #8839ef;
 
   --page-bg: #dce0e8;
-  --backdrop: radial-gradient(120% 90% at 15% 0%, rgba(30, 102, 245, 0.16), transparent 55%),
-    radial-gradient(100% 80% at 88% 100%, rgba(136, 57, 239, 0.14), transparent 55%);
-  --backdrop-size: cover;
-  --backdrop-opacity: 1;
+  --backdrop: url("assets/backdrops/latte.png");
+  --backdrop-opacity: 0.85;
   --shell-alpha: 0.88;
   --shot-bg: #e6e9ef;
 }

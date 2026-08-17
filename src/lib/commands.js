@@ -78,7 +78,7 @@ const LAZY_PLUGINS = [
   ["lineModel.lua", "local", "range-based cursor grid"],
   ["telescope.jsx", "local", "fuzzy finder + live grep"],
   ["which-key.jsx", "local", "leader menu"],
-  ["colorschemes", "local", `${THEMES.length} themes`]
+  ["colorschemes", "local", `${THEMES.length} themes, one wallpaper`]
 ];
 
 function lazyLines() {
@@ -299,6 +299,15 @@ export function createCommands(ctx) {
       run: () => {
         clearSearch();
         showMessage("search cleared");
+      }
+    },
+    {
+      name: "checkhealth",
+      aliases: ["che", "skills"],
+      desc: "open the skills report",
+      run: () => {
+        navigate("skills.health");
+        showMessage('"skills.health"');
       }
     },
     {

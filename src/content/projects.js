@@ -77,22 +77,24 @@ export const projects = [
     ]
   },
   {
-    id: "fyp",
-    name: "Final-Year Project",
-    tagline: "In progress - 2026/27",
-    period: "2026 - 2027",
+    id: "lochord",
+    name: "LoChord",
+    tagline: "A real-time MIDI chord instrument, hardware and firmware",
+    period: "2026 - present",
     status: "wip",
-    mockup: "blank",
-    shotCaption: "placeholder - swap this entry out once the project is underway",
-    tech: ["TBC"],
+    badge: "in progress",
+    mockup: "device",
+    shotCaption: "chord keys, joystick voicing, three encoders, 2.79\" LVGL display",
+    tech: ["ESP32-S3", "C++", "PlatformIO", "TinyUSB", "LVGL", "KiCad", "MIDI"],
     link: "",
     desc:
-      "Placeholder for my individual final-year project. This entry is a scaffold, not a real project yet - fill in the title, stack, and outcomes as the year progresses.",
+      "A pocket chord instrument I am designing from the schematic up. Eight low-profile keys play chords within a scale, a joystick reshapes the voicing as you hold them, and a loop button drives a record/play/overdub state machine. It speaks class-compliant USB MIDI, so it drives anything in Ableton.",
     points: [
-      "TODO: one line on the problem and why it matters.",
-      "TODO: the technical approach and the hardest part of it.",
-      "TODO: a measurable result.",
-      "TODO: link to the repo or write-up."
+      "Writing the firmware in C++ on an ESP32-S3 with PlatformIO, using the chip's native USB via TinyUSB for MIDI with no adapter in the middle.",
+      "Designing the board myself in KiCad: 8 Kailh Choc switches, 3 clickable rotary encoders, a Switch joystick module on a 0.5mm FPC, and an SPI TFT.",
+      "Driving a 428x142 NV3007 display with LVGL, with the interface laid out in EEZ Studio.",
+      "Keeping firmware and hardware honest with a single PINOUT.md that both sides have to agree with before either changes.",
+      "Next: an onboard wavetable synth over an I2S codec, which is why the headphone jack and analogue rail are already on the board."
     ]
   }
 ];

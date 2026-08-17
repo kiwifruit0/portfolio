@@ -465,6 +465,10 @@ export default function Editor({ file, children, cli, options, inputLocked, apiR
 
   const currentRow = rows[cursor] ?? FALLBACK_ROW;
   const cursorX = currentRow.x + column * currentRow.charWidth;
+  // The block paints over the glyph, so it has to redraw it in the inverse
+  // colour. Whitespace stays a plain block.
+  const covered = currentRow.text?.[column] ?? "";
+  const charUnderCursor = covered.trim() ? covered : "";
 
   const gutter = useMemo(() => {
     const entries = [];
@@ -553,9 +557,12 @@ export default function Editor({ file, children, cli, options, inputLocked, apiR
                   style={{
                     transform: `translate(${cursorX}px, ${currentRow.y}px)`,
                     width: `${currentRow.charWidth}px`,
-                    height: `${currentRow.height}px`
+                    height: `${currentRow.height}px`,
+                    fontSize: `${currentRow.fontSize}px`
                   }}
-                />
+                >
+                  {charUnderCursor}
+                </div>
               </div>
             )}
           </div>

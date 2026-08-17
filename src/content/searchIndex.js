@@ -2,7 +2,7 @@ import { profile, highlights } from "./profile";
 import { roles, volunteering } from "./experience";
 import { degree, priorEducation } from "./education";
 import { projects } from "./projects";
-import { skillGroups, learning, interests } from "./skills";
+import { healthSections, healthSummary } from "./skills";
 
 // A flat, greppable view of everything on the site.
 // Powers <leader>fg (live grep) and the finder's preview pane.
@@ -40,9 +40,13 @@ function build() {
   degree.years.forEach((y) => push("education.sh", `${y.label}: ${y.modules.join(", ")}`));
   priorEducation.forEach((e) => push("education.sh", `${e.title}, ${e.org} (${e.period}) - ${e.detail}`));
 
-  skillGroups.forEach((g) => push("skills.lua", `${g.label}: ${g.items.join(", ")}`));
-  learning.forEach((l) => push("skills.lua", `learning: ${l}`));
-  interests.forEach((i) => push("skills.lua", `outside work: ${i}`));
+  healthSummary.forEach((entry) => push("skills.health", `- ${entry.level} ${entry.name}: ${entry.note}`));
+  healthSections.forEach((section) => {
+    push("skills.health", `${section.title} ~`);
+    section.entries.forEach((entry) =>
+      push("skills.health", `- ${entry.level} ${entry.name}: ${entry.note}`)
+    );
+  });
 
   push("contact.java", `email ${profile.email}`);
   push("contact.java", `github ${profile.github}`);

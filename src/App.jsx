@@ -29,7 +29,7 @@ const pages = {
   "projects.cpp": { name: "projects.cpp", language: "cpp", component: Projects, icon: "mdi:language-cpp" },
   "experience.py": { name: "experience.py", language: "python", component: Experience, icon: "mdi:language-python" },
   "education.sh": { name: "education.sh", language: "bash", component: Education, icon: "mdi:terminal" },
-  "skills.lua": { name: "skills.lua", language: "lua", component: Skills, icon: "mdi:language-lua" },
+  "skills.health": { name: "skills.health", language: "checkhealth", component: Skills, icon: "mdi:heart-pulse" },
   "cv.pdf": { name: "cv.pdf", language: "pdf", component: CV, icon: "mdi:file-pdf-box" },
   "contact.java": { name: "contact.java", language: "java", component: Contact, icon: "mdi:card-account-phone-outline" }
 };

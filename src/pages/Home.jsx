@@ -44,6 +44,9 @@ export default function Home() {
       <ul>
         <li>Final year at Southampton, on track for a first, starting my individual project.</li>
         <li>Open to graduate software engineering roles starting summer/autumn 2027.</li>
+        <li>
+          Building LoChord, a MIDI chord instrument on an ESP32-S3 — my own board, my own firmware.
+        </li>
         <li>Reading a lot about distributed systems, and finally learning Rust properly.</li>
         <li>Still entering hackathons. Two wins so far, aiming for a third this year.</li>
       </ul>

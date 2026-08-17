@@ -42,10 +42,12 @@ function HelpContent({ commands }) {
 }
 
 export default function FloatWindow({ title, lines, variant, commands = [], onClose }) {
-  const closeRef = useRef(null);
+  const dialogRef = useRef(null);
 
+  // Focus the dialog itself, not the close button: focusing a button leaves it
+  // looking pressed/selected when all the user did was open the window.
   useEffect(() => {
-    closeRef.current?.focus();
+    dialogRef.current?.focus({ preventScroll: true });
   }, []);
 
   useEffect(() => {
@@ -62,6 +64,8 @@ export default function FloatWindow({ title, lines, variant, commands = [], onCl
   return (
     <div className="float-overlay" onMouseDown={onClose} role="presentation">
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         className={`float-window ${variant === "help" ? "float-window-wide" : ""}`}
         onMouseDown={(event) => event.stopPropagation()}
         role="dialog"
@@ -69,7 +73,7 @@ export default function FloatWindow({ title, lines, variant, commands = [], onCl
       >
         <div className="float-titlebar">
           <span className="float-title">{title}</span>
-          <button ref={closeRef} type="button" className="float-close" onClick={onClose}>
+          <button type="button" className="float-close" onClick={onClose}>
             press q or esc to close
           </button>
         </div>

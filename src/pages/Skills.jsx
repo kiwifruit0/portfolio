@@ -1,133 +1,46 @@
 import { Fragment } from "react";
-import { interests, learning, skillGroups } from "../content/skills";
+import { healthSections, healthSummary } from "../content/skills";
 
-const ITEMS_PER_LINE = 3;
+const RULE = "=".repeat(120);
 
-function chunk(items, size) {
-  const out = [];
-  for (let i = 0; i < items.length; i += size) {
-    out.push(items.slice(i, i + size));
-  }
-  return out;
-}
-
-function StringList({ items }) {
+function Entry({ level, name, note }) {
   return (
-    <>
-      {items.map((item, index) => (
-        <Fragment key={item}>
-          <span className="code-string">&quot;{item}&quot;</span>
-          <span className="code-punct">{index < items.length - 1 ? ", " : ","}</span>
-        </Fragment>
-      ))}
-    </>
-  );
-}
-
-function TableBlock({ name, comment, items }) {
-  return (
-    <>
-      <p className="code-line">
-        <span className="code-comment">-- {comment}</span>
-      </p>
-      <p className="code-line">
-        <span className="code-var">toby</span>
-        <span className="code-punct">.</span>
-        <span className="code-field">{name}</span>
-        <span className="code-punct"> = {"{"}</span>
-      </p>
-      {chunk(items, ITEMS_PER_LINE).map((row, index) => (
-        <p className="code-line" key={index}>
-          {"  "}
-          <StringList items={row} />
-        </p>
-      ))}
-      <p className="code-line">
-        <span className="code-punct">{"}"}</span>
-      </p>
-      <p className="blank"></p>
-    </>
+    <p className="health-entry">
+      <span className={`health-level level-${level.toLowerCase()}`}>- {level}</span>{" "}
+      <b>{name}</b>: <span className="health-note">{note}</span>
+    </p>
   );
 }
 
 export default function Skills() {
   return (
-    <div className="page page-code">
-      <h1>skills.lua</h1>
+    <div className="page page-health">
+      <h1>checkhealth</h1>
 
-      <p className="code-line">
-        <span className="code-comment">-- what I actually reach for, not everything I have opened once</span>
-      </p>
-      <p className="code-line">
-        <span className="code-keyword">local</span> <span className="code-var">toby</span>
-        <span className="code-punct"> = {"{}"}</span>
-      </p>
+      <p className="health-rule">{RULE}</p>
+      <p className="health-source">toby: require(&quot;toby.health&quot;).check()</p>
       <p className="blank"></p>
 
-      {skillGroups.map((group) => (
-        <TableBlock key={group.key} name={group.label} comment={group.comment} items={group.items} />
+      <h3 className="health-section">Summary ~</h3>
+      {healthSummary.map((entry) => (
+        <Entry key={entry.name} {...entry} />
       ))}
 
-      <p className="code-line">
-        <span className="code-comment">-- currently working through</span>
-      </p>
-      <p className="code-line">
-        <span className="code-var">toby</span>
-        <span className="code-punct">.</span>
-        <span className="code-field">learning</span>
-        <span className="code-punct"> = {"{"}</span>
-      </p>
-      {learning.map((item) => (
-        <p className="code-line" key={item}>
-          {"  "}
-          <span className="code-string">&quot;{item}&quot;</span>
-          <span className="code-punct">,</span>
-        </p>
+      {healthSections.map((section) => (
+        <Fragment key={section.id}>
+          <p className="blank"></p>
+          <h3 className="health-section">{section.title} ~</h3>
+          {section.entries.map((entry) => (
+            <Entry key={entry.name} {...entry} />
+          ))}
+        </Fragment>
       ))}
-      <p className="code-line">
-        <span className="code-punct">{"}"}</span>
-      </p>
-      <p className="blank"></p>
 
-      <p className="code-line">
-        <span className="code-comment">-- and away from a keyboard</span>
-      </p>
-      <p className="code-line">
-        <span className="code-var">toby</span>
-        <span className="code-punct">.</span>
-        <span className="code-field">interests</span>
-        <span className="code-punct"> = {"{"}</span>
-      </p>
-      {interests.map((item) => (
-        <p className="code-line" key={item}>
-          {"  "}
-          <span className="code-string">&quot;{item}&quot;</span>
-          <span className="code-punct">,</span>
-        </p>
-      ))}
-      <p className="code-line">
-        <span className="code-punct">{"}"}</span>
-      </p>
       <p className="blank"></p>
-
-      <p className="code-line">
-        <span className="code-keyword">function</span> <span className="code-var">toby</span>
-        <span className="code-punct">.</span>
-        <span className="code-func">available</span>
-        <span className="code-punct">()</span>
-      </p>
-      <p className="code-line">
-        {"  "}
-        <span className="code-keyword">return</span> <span className="code-boolean">true</span>
-        <span className="code-comment"> -- graduate roles, summer 2027</span>
-      </p>
-      <p className="code-line">
-        <span className="code-keyword">end</span>
-      </p>
-      <p className="blank"></p>
-
-      <p className="code-line">
-        <span className="code-keyword">return</span> <span className="code-var">toby</span>
+      <p className="health-rule">{RULE}</p>
+      <p className="dim">
+        Everything marked OK has been used on something real. WARN means I am still learning it and
+        would say so in an interview.
       </p>
     </div>
   );

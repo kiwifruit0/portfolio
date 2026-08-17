@@ -16,11 +16,12 @@ export default function Projects() {
       </p>
 
       {projects.map((project) => (
-        <div key={project.id} className={`entry project-entry ${project.status === "wip" ? "wip" : ""}`}>
+        <div key={project.id} className="entry project-entry">
           <p className="blank"></p>
 
           <h3>
             {project.award && <span className="award-badge">{project.award}</span>}
+            {project.badge && <span className="wip-badge">{project.badge}</span>}
             {project.name}
           </h3>
           <p className="entry-meta">
