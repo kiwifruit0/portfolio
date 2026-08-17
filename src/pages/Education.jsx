@@ -1,24 +1,44 @@
+import { degree, priorEducation } from "../content/education";
+
 export default function Education() {
   return (
     <div className="page">
-
       <h1>Education</h1>
 
-      <p className="blank"></p>
-      <h3>BSc Computer Science, University of Southampton (2024 - 2027)</h3>
-      <p>On track for a 1st (Year 1 average: 1st, Year 2 predicted: 1st).</p>
-      <p>
-        Modules I’ve especially enjoyed: Operating Systems, Algorithmics, System Architecture, Networks & Security.
+      <p className="lede">
+        Firsts in both years so far, and the modules I liked most were the ones closest to the
+        hardware.
       </p>
 
       <p className="blank"></p>
-      <h3>A-Levels, George Abbot School (2022 - 2024)</h3>
-      <p>Maths (A*), Further Maths (A), Computer Science (A).</p>
+      <h3>
+        {degree.title} — {degree.org}
+      </h3>
+      <p className="entry-meta">{degree.period}</p>
+      <p>{degree.grade}</p>
 
-      <p className="blank"></p>
-      <h3>GCSEs, George Abbot School (2020 - 2022)</h3>
-      <p>I completed 11 GCSEs at grades 8–9 (including Maths, English, Sciences, and Food Nutrition).</p>
+      {degree.years.map((year) => (
+        <div key={year.label} className="entry">
+          <p className="blank"></p>
+          <p className="entry-label">{year.label}</p>
+          <ul>
+            {year.modules.map((module) => (
+              <li key={module}>{module}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
 
+      {priorEducation.map((item) => (
+        <div key={item.title} className="entry">
+          <p className="blank"></p>
+          <h3>
+            {item.title} — {item.org}
+          </h3>
+          <p className="entry-meta">{item.period}</p>
+          <p>{item.detail}</p>
+        </div>
+      ))}
     </div>
   );
 }

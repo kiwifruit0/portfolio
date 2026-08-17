@@ -1,27 +1,44 @@
 import { Icon } from "@iconify/react";
+import { profile, links } from "../content/profile";
 
 const contactItems = [
   {
+    label: "Email",
+    value: profile.email,
+    href: links.email,
+    actionLabel: "email",
+    icon: "mdi:email-outline"
+  },
+  {
+    label: "LinkedIn",
+    value: profile.linkedin,
+    href: links.linkedin,
+    actionLabel: "connect",
+    icon: "mdi:linkedin",
+    external: true
+  },
+  {
     label: "GitHub",
-    value: "github.com/kiwifruit0",
-    href: "https://github.com/kiwifruit0",
+    value: profile.github,
+    href: links.github,
     actionLabel: "open profile",
     icon: "mdi:github",
     external: true
   },
   {
-    label: "Phone",
-    value: "+44 7981 920045",
-    href: "tel:+447981920045",
-    actionLabel: "call",
-    icon: "mdi:phone-outline"
+    label: "Website",
+    value: profile.website,
+    href: links.website,
+    actionLabel: "visit",
+    icon: "mdi:web",
+    external: true
   },
   {
-    label: "Email",
-    value: "tobysj@proton.me",
-    href: "mailto:tobysj@proton.me",
-    actionLabel: "email",
-    icon: "mdi:email-outline"
+    label: "Phone",
+    value: profile.phone,
+    href: links.phone,
+    actionLabel: "call",
+    icon: "mdi:phone-outline"
   }
 ];
 
@@ -30,8 +47,9 @@ export default function Contact() {
     <div className="page contact-page">
       <h1>Contact</h1>
 
-      <p>
-        The fastest way to reach me is by email. You can also find my work on GitHub or call me directly.
+      <p className="lede">
+        Email is fastest, and I reply to everything. Based in {profile.location}, happy to talk
+        about graduate roles, internships, or anything you are building.
       </p>
 
       <p className="blank"></p>
@@ -68,6 +86,12 @@ export default function Contact() {
           </li>
         ))}
       </ul>
+
+      <p className="blank"></p>
+
+      <p className="dim">
+        -- put the cursor on any line above and press gx to open it, or run :email --
+      </p>
     </div>
   );
 }

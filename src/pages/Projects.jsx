@@ -1,46 +1,62 @@
-import TwoColumnCards from "../components/ProjectCard";
+import ProjectShot from "../components/ProjectShot";
+import { projects } from "../content/projects";
+
+function normalizeUrl(url) {
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+}
 
 export default function Projects() {
   return (
     <div className="page">
+      <h1>Projects</h1>
 
-      <h1>Projects and Achievements</h1>
-
-      <p>
-        I like building projects that solve real problems and get used by real people.
-        Here are a few I've enjoyed working on.
+      <p className="lede">
+        Things I have built, in the order I am most proud of them. Two of these won hackathons; one
+        of them is the page you are reading.
       </p>
 
-      <p className="blank"></p>
-      <TwoColumnCards
-        cards={[
-          {
-            name: "1st place - ElevenLabs track at SotonHack 2026",
-            desc: "Voice-based social media that joins the semi-anonymous forum style of Reddit and Quora with the daily interaction between friends seen in BeReal. Won the \"Best use of ElevenLabs\" track with our AI voice assistant.",
-            tech: ["React", "Python", "FastAPI", "Gemini API", "MongoDB"],
-            link: "github.com/kiwifruit0/Echo",
-          },
-          {
-            name: "1st place - Soton Data Science x WECS Hackathon 2026",
-            desc: "Location-aware, full stack app that turns going outside into a game with category-based stats and leaderboards. I worked on the API integration, as well as the geolocation + Mapbox place classification.",
-            tech: ["React", "Tailwind", "Python", "FastAPI", "REST API"],
-            link: "github.com/Ryan-Shino/WECSHackathonProject",
-          },
-          {
-            name: "Machine learning grade predictor",
-            desc: "A small ML app that predicts student grades from academic + non-academic attributes. Built the regression model from scratch in Python, did feature engineering/tuning, and got ~15% improvement over a baseline linear model.",
-            tech: ["Python", "Machine Learning", "Regression"],
-            link: "github.com/kiwifruit0/grade_predictor",
-          },
-          {
-            name: "Neovim-inspired portfolio website",
-            desc: "The site you're on right now! A single-page React app styled like my favourite IDE, with a custom cursor grid and resizable panels",
-            tech: ["React", "Vite", "CSS"],
-            link: "github.com/kiwifruit0/portfolio",
-          },
-        ]}
-      />
+      {projects.map((project) => (
+        <div key={project.id} className={`entry project-entry ${project.status === "wip" ? "wip" : ""}`}>
+          <p className="blank"></p>
 
+          <h3>
+            {project.award && <span className="award-badge">{project.award}</span>}
+            {project.name}
+          </h3>
+          <p className="entry-meta">
+            {project.tagline} · {project.period}
+          </p>
+
+          <ProjectShot
+            mockup={project.mockup}
+            image={project.image}
+            alt={`${project.name} interface preview`}
+            caption={project.shotCaption}
+          />
+
+          <p>{project.desc}</p>
+          <ul>
+            {project.points.map((point) => (
+              <li key={point}>{point}</li>
+            ))}
+          </ul>
+          <p className="tag-row">{project.tech.map((tech) => `[${tech}]`).join("  ")}</p>
+          {project.link && (
+            <p className="link-row">
+              ↗{" "}
+              <a href={normalizeUrl(project.link)} target="_blank" rel="noopener noreferrer">
+                {project.link}
+              </a>
+            </p>
+          )}
+        </div>
+      ))}
+
+      <p className="blank"></p>
+      <p className="dim">
+        -- previews are hand-drawn wireframes that follow the colorscheme; swap them for real
+        screenshots in src/assets/previews/ --
+      </p>
     </div>
   );
 }

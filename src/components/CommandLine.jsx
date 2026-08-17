@@ -1,145 +1,50 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { commandNames, createCommands, findCommand } from "../lib/commands";
 
-const HELP_TEXT = `Keyboard shortcuts:
-  h/j/k/l, arrows  Navigate cursor
-  gg               Jump to top of file
-  G                Jump to bottom of file
-  /pattern         Search for text
-  n/N              Next/previous search match
-Commands:
-  :w               Write (save) file
-  :q               Quit
-  :e <file>        Open file (e.g. :e contact.java)
-  :help            Show this help`;
+const MAX_HISTORY = 50;
 
-export function useCommandLine(fileName, { onNavigate, availableFiles = [] } = {}) {
-  const [mode, setMode] = useState("normal"); // normal, command, search
+function longestCommonPrefix(values) {
+  if (values.length === 0) return "";
+  return values.reduce((prefix, value) => {
+    let i = 0;
+    while (i < prefix.length && i < value.length && prefix[i] === value[i]) i += 1;
+    return prefix.slice(0, i);
+  });
+}
+
+export function useCommandLine(context) {
+  const [mode, setMode] = useState("normal"); // normal | command | search
   const [command, setCommand] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMatches, setSearchMatches] = useState([]);
   const [currentMatchIndex, setCurrentMatchIndex] = useState(-1);
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
+  const [notice, setNotice] = useState({ text: "", type: "", token: 0 });
+  const [history, setHistory] = useState([]);
+  const historyCursor = useRef(-1);
+  const completion = useRef(null);
   const inputRef = useRef(null);
 
+  const message = notice.text;
+  const messageType = notice.type;
+
   const clearMessage = useCallback(() => {
-    setMessage("");
-    setMessageType("");
+    setNotice((prev) => (prev.text ? { text: "", type: "", token: prev.token + 1 } : prev));
   }, []);
 
-  const showMessage = useCallback((msg, type = "success", duration = 3000) => {
-    setMessage(msg);
-    setMessageType(type);
-    if (duration > 0) {
-      setTimeout(clearMessage, duration);
-    }
-  }, [clearMessage]);
-
-  const exitMode = useCallback(() => {
-    setMode("normal");
-    setCommand("");
+  const showMessage = useCallback((text, type = "success", duration = 3500) => {
+    setNotice((prev) => ({ text, type, token: prev.token + 1, duration }));
   }, []);
 
+  // Messages expire on their own; the timer is keyed on the token so a new
+  // message always restarts the countdown.
   useEffect(() => {
-    const handleKeyPress = (event) => {
-      const target = event.target;
-      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
-        return;
-      }
-
-      if (mode === "normal") {
-        if (event.key === ":" && !event.ctrlKey && !event.metaKey) {
-          event.preventDefault();
-          setMode("command");
-          setCommand("");
-          clearMessage();
-        } else if (event.key === "/" && !event.ctrlKey && !event.metaKey) {
-          event.preventDefault();
-          setMode("search");
-          setCommand("");
-          setSearchQuery("");
-          setSearchMatches([]);
-          setCurrentMatchIndex(-1);
-          clearMessage();
-        } else if (event.key === "n" && searchQuery) {
-          event.preventDefault();
-          if (searchMatches.length > 0) {
-            setCurrentMatchIndex((prev) => (prev + 1) % searchMatches.length);
-          }
-        } else if (event.key === "N" && searchQuery) {
-          event.preventDefault();
-          if (searchMatches.length > 0) {
-            setCurrentMatchIndex((prev) => (prev - 1 + searchMatches.length) % searchMatches.length);
-          }
-        }
-      } else if (event.key === "Escape") {
-        event.preventDefault();
-        exitMode();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyPress);
-    return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [mode, searchQuery, searchMatches.length, clearMessage, exitMode]);
-
-  useEffect(() => {
-    if ((mode === "command" || mode === "search") && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [mode]);
-
-  const handleCommandSubmit = useCallback((event) => {
-    event.preventDefault();
-    const trimmedCommand = command.trim();
-
-    if (trimmedCommand === "w" || trimmedCommand === "w!") {
-      showMessage(`"${fileName}" [+] 0L, 0B written`);
-    } else if (trimmedCommand === "q" || trimmedCommand === "q!" || trimmedCommand === "quit") {
-      showMessage("no :)", "error");
-    } else if (trimmedCommand === "wq" || trimmedCommand === "wq!") {
-      showMessage(`"${fileName}" [+] 0L, 0B written`);
-      setTimeout(() => showMessage("no :)", "error"), 1500);
-    } else if (trimmedCommand === "help" || trimmedCommand === "h") {
-      showMessage(HELP_TEXT, "help", 8000);
-    } else if (trimmedCommand.startsWith("e ") || trimmedCommand.startsWith("edit ")) {
-      const targetFile = trimmedCommand.replace(/^(e|edit)\s+/, "").trim();
-      const matchedFile = availableFiles.find(
-        (f) => f === targetFile || f.startsWith(targetFile) || f.replace(/\..+$/, "") === targetFile
-      );
-      if (matchedFile && onNavigate) {
-        onNavigate(matchedFile);
-        showMessage(`"${matchedFile}"`);
-      } else {
-        showMessage(`E212: Can't open file for writing: ${targetFile}`, "error");
-      }
-    } else if (trimmedCommand) {
-      showMessage(`E492: Not an editor command: ${trimmedCommand}`, "error");
-    }
-
-    exitMode();
-  }, [command, fileName, availableFiles, onNavigate, showMessage, exitMode]);
-
-  const handleSearchSubmit = useCallback((event) => {
-    event.preventDefault();
-    const query = command.trim();
-    if (query) {
-      setSearchQuery(query);
-      // Search will be performed by the Editor component
-    }
-    exitMode();
-  }, [command, exitMode]);
-
-  const handleSubmit = useCallback((event) => {
-    if (mode === "command") {
-      handleCommandSubmit(event);
-    } else if (mode === "search") {
-      handleSearchSubmit(event);
-    }
-  }, [mode, handleCommandSubmit, handleSearchSubmit]);
-
-  const handleChange = useCallback((event) => {
-    setCommand(event.target.value);
-  }, []);
+    if (!notice.text || notice.duration === 0) return undefined;
+    const timer = window.setTimeout(
+      () => setNotice((prev) => (prev.token === notice.token ? { text: "", type: "", token: prev.token } : prev)),
+      notice.duration ?? 3500
+    );
+    return () => window.clearTimeout(timer);
+  }, [notice]);
 
   const clearSearch = useCallback(() => {
     setSearchQuery("");
@@ -147,19 +52,198 @@ export function useCommandLine(fileName, { onNavigate, availableFiles = [] } = {
     setCurrentMatchIndex(-1);
   }, []);
 
+  const commands = useMemo(
+    () => createCommands({ ...context, showMessage, clearSearch }),
+    [context, showMessage, clearSearch]
+  );
+
+  const enterCommandMode = useCallback(
+    (initial = "") => {
+      setMode("command");
+      setCommand(initial);
+      historyCursor.current = -1;
+      completion.current = null;
+      clearMessage();
+    },
+    [clearMessage]
+  );
+
+  const enterSearchMode = useCallback(() => {
+    setMode("search");
+    setCommand("");
+    clearSearch();
+    clearMessage();
+  }, [clearMessage, clearSearch]);
+
+  const exitMode = useCallback(() => {
+    setMode("normal");
+    setCommand("");
+    completion.current = null;
+  }, []);
+
+  const matchCount = searchMatches.length;
+  const nextMatch = useCallback(
+    (direction) => {
+      if (matchCount === 0) return;
+      setCurrentMatchIndex((prev) => (prev + direction + matchCount) % matchCount);
+    },
+    [matchCount]
+  );
+
+  const runCommandLine = useCallback(
+    (raw) => {
+      const trimmed = raw.trim();
+      if (!trimmed) return;
+
+      // :42 jumps to a line, same as vim.
+      if (/^\d+$/.test(trimmed)) {
+        context.gotoLine(Number(trimmed));
+        return;
+      }
+
+      const [head, ...rest] = trimmed.split(/\s+/);
+      const target = findCommand(commands, head);
+      if (!target) {
+        showMessage(`E492: not an editor command: ${head}`, "error");
+        return;
+      }
+      target.run(rest.join(" ").trim());
+    },
+    [commands, context, showMessage]
+  );
+
+  const handleSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+      const value = command.trim();
+
+      if (mode === "search") {
+        if (value) {
+          setSearchQuery(value);
+        } else {
+          clearSearch();
+        }
+        exitMode();
+        return;
+      }
+
+      if (value) {
+        setHistory((prev) => [value, ...prev.filter((item) => item !== value)].slice(0, MAX_HISTORY));
+        runCommandLine(value);
+      }
+      exitMode();
+    },
+    [command, mode, exitMode, clearSearch, runCommandLine]
+  );
+
+  const handleChange = useCallback((event) => {
+    completion.current = null;
+    setCommand(event.target.value);
+  }, []);
+
+  const applyCompletion = useCallback(
+    (shift) => {
+      if (mode !== "command") return;
+
+      if (!completion.current) {
+        const value = command;
+        const spaceIndex = value.indexOf(" ");
+        let base;
+        let prefix;
+        let pool;
+
+        if (spaceIndex === -1) {
+          base = "";
+          prefix = value;
+          pool = commandNames(commands);
+        } else {
+          base = `${value.slice(0, spaceIndex + 1)}`;
+          prefix = value.slice(spaceIndex + 1);
+          const target = findCommand(commands, value.slice(0, spaceIndex));
+          pool = target?.complete ? target.complete() : [];
+        }
+
+        const candidates = pool.filter((entry) => entry.startsWith(prefix)).sort();
+        if (candidates.length === 0) return;
+
+        // Vim fills in the shared prefix first, then cycles.
+        const shared = longestCommonPrefix(candidates);
+        if (candidates.length > 1 && shared.length > prefix.length) {
+          setCommand(base + shared);
+          return;
+        }
+
+        completion.current = { base, candidates, index: -1 };
+      }
+
+      const state = completion.current;
+      state.index =
+        (state.index + (shift ? -1 : 1) + state.candidates.length) % state.candidates.length;
+      setCommand(state.base + state.candidates[state.index]);
+    },
+    [command, commands, mode]
+  );
+
+  const handleInputKeyDown = useCallback(
+    (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        exitMode();
+        return;
+      }
+      if (event.key === "Tab") {
+        event.preventDefault();
+        applyCompletion(event.shiftKey);
+        return;
+      }
+      if (event.key === "ArrowUp" && mode === "command" && history.length > 0) {
+        event.preventDefault();
+        historyCursor.current = Math.min(historyCursor.current + 1, history.length - 1);
+        setCommand(history[historyCursor.current]);
+        return;
+      }
+      if (event.key === "ArrowDown" && mode === "command") {
+        event.preventDefault();
+        historyCursor.current = Math.max(historyCursor.current - 1, -1);
+        setCommand(historyCursor.current === -1 ? "" : history[historyCursor.current]);
+        return;
+      }
+      if (event.key === "Backspace" && command === "") {
+        event.preventDefault();
+        exitMode();
+      }
+    },
+    [applyCompletion, command, exitMode, history, mode]
+  );
+
+  useEffect(() => {
+    if (mode !== "normal" && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [mode]);
+
   return {
     mode,
     command,
+    commands,
     message,
     messageType,
     inputRef,
-    handleSubmit,
-    handleChange,
     searchQuery,
     searchMatches,
-    setSearchMatches,
     currentMatchIndex,
+    setSearchMatches,
     setCurrentMatchIndex,
-    clearSearch
+    clearSearch,
+    clearMessage,
+    showMessage,
+    enterCommandMode,
+    enterSearchMode,
+    exitMode,
+    nextMatch,
+    runCommandLine,
+    handleSubmit,
+    handleChange,
+    handleInputKeyDown
   };
 }

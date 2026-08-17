@@ -135,10 +135,22 @@ export default function CV() {
   return (
     <div className="page cv-page">
       <div className="cv-toolbar">
-        <p className="cv-toolbar-title">Toby_Jennings_CV.pdf</p>
-        <a className="cv-download-button" href={cvPdfUrl} download="Toby_Jennings_CV.pdf">
-          <Icon icon="mdi:tray-download" width={15}/> download
-        </a>
+        <p className="cv-toolbar-title">
+          Toby_Jennings_CV.pdf {pageCount > 0 && <span className="dim">· {pageCount} page{pageCount === 1 ? "" : "s"}</span>}
+        </p>
+        <div className="cv-toolbar-actions">
+          <a
+            className="cv-download-button secondary"
+            href={cvPdfUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Icon icon="mdi:open-in-new" width={15} /> open
+          </a>
+          <a className="cv-download-button" href={cvPdfUrl} download="Toby_Jennings_CV.pdf">
+            <Icon icon="mdi:tray-download" width={15} /> download
+          </a>
+        </div>
       </div>
 
       <div className="cv-viewport" ref={viewportRef}>

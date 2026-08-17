@@ -1,0 +1,199 @@
+/* Colorscheme palettes.
+   Slot meanings (Nord naming, kept because the whole stylesheet already uses it):
+     --nord0..3  backgrounds, darkest to lightest (nord3 = borders / comments)
+     --nord4..6  foregrounds, dimmest to brightest
+     --nord7     teal      --nord8  cyan (headings)   --nord9  blue (links, cursor)
+     --nord10    deep blue --nord11 red               --nord12 orange
+     --nord13    yellow    --nord14 green             --nord15 purple
+     --page-bg   the backdrop behind the floating editor
+     --backdrop  a decorative layer painted over --page-bg
+*/
+
+:root,
+[data-theme="nord"] {
+  --nord0: #2e3440;
+  --nord1: #3b4252;
+  --nord2: #434c5e;
+  --nord3: #4c566a;
+  --nord4: #d8dee9;
+  --nord5: #e5e9f0;
+  --nord6: #eceff4;
+  --nord7: #8fbcbb;
+  --nord8: #88c0d0;
+  --nord9: #81a1c1;
+  --nord10: #5e81ac;
+  --nord11: #bf616a;
+  --nord12: #d08770;
+  --nord13: #ebcb8b;
+  --nord14: #a3be8c;
+  --nord15: #b48ead;
+
+  --page-bg: #1a1b26;
+  --backdrop: url("assets/nord-pixel.png");
+  --backdrop-size: cover;
+  --backdrop-opacity: 1;
+  --shell-alpha: 0.75;
+  --shot-bg: #262c38;
+}
+
+[data-theme="tokyonight"] {
+  --nord0: #1a1b26;
+  --nord1: #24283b;
+  --nord2: #2f334d;
+  --nord3: #545c7e;
+  --nord4: #c0caf5;
+  --nord5: #d5dbf7;
+  --nord6: #eaeefc;
+  --nord7: #73daca;
+  --nord8: #7dcfff;
+  --nord9: #7aa2f7;
+  --nord10: #3d59a1;
+  --nord11: #f7768e;
+  --nord12: #ff9e64;
+  --nord13: #e0af68;
+  --nord14: #9ece6a;
+  --nord15: #bb9af7;
+
+  --page-bg: #101014;
+  --backdrop: radial-gradient(120% 90% at 15% 0%, rgba(122, 162, 247, 0.24), transparent 55%),
+    radial-gradient(100% 80% at 90% 100%, rgba(187, 154, 247, 0.22), transparent 55%);
+  --backdrop-size: cover;
+  --backdrop-opacity: 1;
+  --shell-alpha: 0.82;
+  --shot-bg: #1b1e2e;
+}
+
+[data-theme="gruvbox"] {
+  --nord0: #282828;
+  --nord1: #32302f;
+  --nord2: #3c3836;
+  --nord3: #7c6f64;
+  --nord4: #ebdbb2;
+  --nord5: #f2e5bc;
+  --nord6: #fbf1c7;
+  --nord7: #8ec07c;
+  --nord8: #8ec07c;
+  --nord9: #83a598;
+  --nord10: #458588;
+  --nord11: #fb4934;
+  --nord12: #fe8019;
+  --nord13: #fabd2f;
+  --nord14: #b8bb26;
+  --nord15: #d3869b;
+
+  --page-bg: #1d2021;
+  --backdrop: radial-gradient(120% 90% at 12% 0%, rgba(215, 153, 33, 0.2), transparent 55%),
+    radial-gradient(110% 85% at 88% 100%, rgba(104, 157, 106, 0.18), transparent 55%);
+  --backdrop-size: cover;
+  --backdrop-opacity: 1;
+  --shell-alpha: 0.84;
+  --shot-bg: #32302f;
+}
+
+[data-theme="catppuccin"] {
+  --nord0: #1e1e2e;
+  --nord1: #292c3c;
+  --nord2: #313244;
+  --nord3: #6c7086;
+  --nord4: #cdd6f4;
+  --nord5: #dce0f5;
+  --nord6: #eff1f8;
+  --nord7: #94e2d5;
+  --nord8: #89dceb;
+  --nord9: #89b4fa;
+  --nord10: #74c7ec;
+  --nord11: #f38ba8;
+  --nord12: #fab387;
+  --nord13: #f9e2af;
+  --nord14: #a6e3a1;
+  --nord15: #cba6f7;
+
+  --page-bg: #11111b;
+  --backdrop: radial-gradient(120% 90% at 18% 0%, rgba(203, 166, 247, 0.24), transparent 55%),
+    radial-gradient(100% 80% at 85% 100%, rgba(137, 180, 250, 0.2), transparent 55%);
+  --backdrop-size: cover;
+  --backdrop-opacity: 1;
+  --shell-alpha: 0.82;
+  --shot-bg: #1e2030;
+}
+
+[data-theme="rose-pine"] {
+  --nord0: #232136;
+  --nord1: #2a273f;
+  --nord2: #393552;
+  --nord3: #6e6a86;
+  --nord4: #e0def4;
+  --nord5: #e9e7f8;
+  --nord6: #f4f2fd;
+  --nord7: #9ccfd8;
+  --nord8: #9ccfd8;
+  --nord9: #c4a7e7;
+  --nord10: #3e8fb0;
+  --nord11: #eb6f92;
+  --nord12: #ea9a97;
+  --nord13: #f6c177;
+  --nord14: #8cb9a3;
+  --nord15: #c4a7e7;
+
+  --page-bg: #191724;
+  --backdrop: radial-gradient(120% 90% at 15% 0%, rgba(196, 167, 231, 0.22), transparent 55%),
+    radial-gradient(100% 80% at 88% 100%, rgba(235, 111, 146, 0.16), transparent 55%);
+  --backdrop-size: cover;
+  --backdrop-opacity: 1;
+  --shell-alpha: 0.82;
+  --shot-bg: #2a273f;
+}
+
+[data-theme="everforest"] {
+  --nord0: #2d353b;
+  --nord1: #343f44;
+  --nord2: #3d484d;
+  --nord3: #7a8478;
+  --nord4: #d3c6aa;
+  --nord5: #e0d7bd;
+  --nord6: #efe7cd;
+  --nord7: #83c092;
+  --nord8: #a7c080;
+  --nord9: #7fbbb3;
+  --nord10: #3a94c5;
+  --nord11: #e67e80;
+  --nord12: #e69875;
+  --nord13: #dbbc7f;
+  --nord14: #a7c080;
+  --nord15: #d699b6;
+
+  --page-bg: #232a2e;
+  --backdrop: radial-gradient(120% 90% at 15% 0%, rgba(167, 192, 128, 0.18), transparent 55%),
+    radial-gradient(100% 80% at 88% 100%, rgba(127, 187, 179, 0.16), transparent 55%);
+  --backdrop-size: cover;
+  --backdrop-opacity: 1;
+  --shell-alpha: 0.84;
+  --shot-bg: #343f44;
+}
+
+[data-theme="latte"] {
+  --nord0: #eff1f5;
+  --nord1: #e6e9ef;
+  --nord2: #dce0e8;
+  --nord3: #8c8fa1;
+  --nord4: #4c4f69;
+  --nord5: #3d4059;
+  --nord6: #1e2030;
+  --nord7: #179299;
+  --nord8: #1e66f5;
+  --nord9: #1e66f5;
+  --nord10: #04a5e5;
+  --nord11: #d20f39;
+  --nord12: #fe640b;
+  --nord13: #df8e1d;
+  --nord14: #40a02b;
+  --nord15: #8839ef;
+
+  --page-bg: #dce0e8;
+  --backdrop: radial-gradient(120% 90% at 15% 0%, rgba(30, 102, 245, 0.16), transparent 55%),
+    radial-gradient(100% 80% at 88% 100%, rgba(136, 57, 239, 0.14), transparent 55%);
+  --backdrop-size: cover;
+  --backdrop-opacity: 1;
+  --shell-alpha: 0.88;
+  --shot-bg: #e6e9ef;
+}
