@@ -302,12 +302,12 @@ export function createCommands(ctx) {
       }
     },
     {
-      name: "checkhealth",
-      aliases: ["che", "skills"],
-      desc: "open the skills report",
+      name: "skills",
+      aliases: ["Lazy", "lazy"],
+      desc: "open the skills list",
       run: () => {
-        navigate("skills.health");
-        showMessage('"skills.health"');
+        navigate("skills.lua");
+        showMessage('"skills.lua"');
       }
     },
     {
@@ -348,10 +348,10 @@ export function createCommands(ctx) {
       }
     },
     {
-      name: "Lazy",
-      aliases: ["lazy"],
+      name: "deps",
+      aliases: ["plugins"],
       desc: "what this site is built from",
-      run: () => openWindow("lazy.nvim", lazyLines())
+      run: () => openWindow("dependencies", lazyLines())
     },
     {
       name: "neofetch",

@@ -174,7 +174,7 @@ function EditorShot() {
   return (
     <Chrome title="portfolio — index.md">
       <rect x="0" y="26" width="120" height="214" fill="var(--nord1)" />
-      {["index.md", "projects.cpp", "experience.py", "education.sh", "skills.health", "contact.java"].map(
+      {["index.md", "projects.cpp", "experience.py", "education.sh", "skills.lua", "contact.java"].map(
         (name, index) => (
           <g key={name}>
             {index === 0 && <rect x="6" y={40 + index * 20} width="108" height="16" rx="3" fill="var(--nord2)" />}

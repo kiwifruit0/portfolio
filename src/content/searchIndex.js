@@ -2,7 +2,7 @@ import { profile, highlights } from "./profile";
 import { roles, volunteering } from "./experience";
 import { degree, priorEducation } from "./education";
 import { projects } from "./projects";
-import { healthSections, healthSummary } from "./skills";
+import { skillSections } from "./skills";
 
 // A flat, greppable view of everything on the site.
 // Powers <leader>fg (live grep) and the finder's preview pane.
@@ -40,11 +40,10 @@ function build() {
   degree.years.forEach((y) => push("education.sh", `${y.label}: ${y.modules.join(", ")}`));
   priorEducation.forEach((e) => push("education.sh", `${e.title}, ${e.org} (${e.period}) - ${e.detail}`));
 
-  healthSummary.forEach((entry) => push("skills.health", `- ${entry.level} ${entry.name}: ${entry.note}`));
-  healthSections.forEach((section) => {
-    push("skills.health", `${section.title} ~`);
+  skillSections.forEach((section) => {
+    push("skills.lua", section.title);
     section.entries.forEach((entry) =>
-      push("skills.health", `- ${entry.level} ${entry.name}: ${entry.note}`)
+      push("skills.lua", `${entry.name} - ${entry.note}`)
     );
   });
 

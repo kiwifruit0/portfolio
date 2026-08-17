@@ -1268,48 +1268,71 @@ kbd {
   line-height: var(--row);
 }
 
-/* ------------------------------------------------------- checkhealth page */
+/* ------------------------------------------------------------ skills page */
 
-/* The === rule is a single row: let it run off the edge rather than wrap into
-   a wall of equals signs on narrow screens. */
-.page .health-rule {
+.skill-legend {
   color: var(--nord3);
-  white-space: nowrap;
-  overflow: hidden;
-  opacity: 0.5;
 }
 
-.health-source {
-  color: var(--nord8);
+.skill-legend-gap {
+  padding: 0 10px;
 }
 
-.page .health-section {
-  color: var(--nord15);
-  font-weight: bold;
-}
-
-.health-entry {
-  padding-left: 2px;
-}
-
-.health-level {
-  font-weight: bold;
-}
-
-.health-level.level-ok {
+.loaded-marker {
   color: var(--nord14);
 }
 
-.health-level.level-info {
-  color: var(--nord9);
-}
-
-.health-level.level-warn {
+.learning-marker {
   color: var(--nord13);
 }
 
-.health-note {
+/* A section heading with a rule that fills the remaining width, the way
+   lazy.nvim draws its groups. */
+.page .skill-section {
+  color: var(--nord15);
+  font-weight: bold;
+  gap: 12px;
+}
+
+.page .skill-section::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid color-mix(in srgb, var(--nord3) 55%, transparent);
+}
+
+/* Real spaces pad the name column, so this row must preserve them. The
+   hanging indent (marker + 18ch name column) keeps a wrapped description
+   aligned under the first line instead of running back to the margin. */
+.skill-row {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding-left: 20ch;
+  text-indent: -20ch;
+}
+
+.skill-row .skill-marker {
+  color: var(--nord14);
+}
+
+.skill-row.learning .skill-marker {
+  color: var(--nord13);
+}
+
+.skill-name {
+  color: var(--nord8);
+  font-weight: bold;
+}
+
+.skill-row.learning .skill-name {
   color: var(--nord4);
+}
+
+.skill-note {
+  color: var(--nord4);
+}
+
+.skill-row.learning .skill-note {
+  color: var(--nord3);
 }
 
 /* ------------------------------------------------------------ contact page */
@@ -1550,6 +1573,12 @@ kbd {
 
   .line-numbers {
     width: 34px;
+  }
+
+  /* Not enough room for a name column and a description side by side. */
+  .skill-row {
+    padding-left: 2ch;
+    text-indent: -2ch;
   }
 
   .line-number {

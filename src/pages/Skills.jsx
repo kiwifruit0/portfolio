@@ -1,35 +1,43 @@
 import { Fragment } from "react";
-import { healthSections, healthSummary } from "../content/skills";
+import { skillFooter, skillSections } from "../content/skills";
 
-const RULE = "=".repeat(120);
+// Name column width, in characters. The padding is real spaces inside a
+// white-space: pre-wrap row, so the rendered columns line up with the cursor
+// grid rather than drifting away from it.
+const NAME_WIDTH = 18;
 
-function Entry({ level, name, note }) {
+const allEntries = skillSections.flatMap((section) => section.entries);
+const loadedCount = allEntries.filter((entry) => entry.state === "loaded").length;
+const learningCount = allEntries.length - loadedCount;
+
+function Entry({ name, state, note }) {
+  const marker = state === "loaded" ? "●" : "○";
+  const label = name.length >= NAME_WIDTH ? `${name} ` : name.padEnd(NAME_WIDTH, " ");
+
   return (
-    <p className="health-entry">
-      <span className={`health-level level-${level.toLowerCase()}`}>- {level}</span>{" "}
-      <b>{name}</b>: <span className="health-note">{note}</span>
+    <p className={`skill-row ${state}`}>
+      <span className="skill-marker">{marker}</span>{" "}
+      <span className="skill-name">{label}</span>
+      <span className="skill-note">{note}</span>
     </p>
   );
 }
 
 export default function Skills() {
   return (
-    <div className="page page-health">
-      <h1>checkhealth</h1>
+    <div className="page page-skills">
+      <h1>Skills</h1>
 
-      <p className="health-rule">{RULE}</p>
-      <p className="health-source">toby: require(&quot;toby.health&quot;).check()</p>
-      <p className="blank"></p>
+      <p className="skill-legend">
+        <span className="skill-marker loaded-marker">●</span> in use ({loadedCount})
+        <span className="skill-legend-gap"> </span>
+        <span className="skill-marker learning-marker">○</span> still loading ({learningCount})
+      </p>
 
-      <h3 className="health-section">Summary ~</h3>
-      {healthSummary.map((entry) => (
-        <Entry key={entry.name} {...entry} />
-      ))}
-
-      {healthSections.map((section) => (
+      {skillSections.map((section) => (
         <Fragment key={section.id}>
           <p className="blank"></p>
-          <h3 className="health-section">{section.title} ~</h3>
+          <h3 className="skill-section">{section.title}</h3>
           {section.entries.map((entry) => (
             <Entry key={entry.name} {...entry} />
           ))}
@@ -37,11 +45,11 @@ export default function Skills() {
       ))}
 
       <p className="blank"></p>
-      <p className="health-rule">{RULE}</p>
-      <p className="dim">
-        Everything marked OK has been used on something real. WARN means I am still learning it and
-        would say so in an interview.
-      </p>
+      {skillFooter.map((line) => (
+        <p key={line} className="dim">
+          {line}
+        </p>
+      ))}
     </div>
   );
 }

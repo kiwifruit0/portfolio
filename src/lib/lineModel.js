@@ -75,30 +75,35 @@ function groupRectsByLine(rects) {
 // Reproduce the browser's greedy word wrap by filling each measured row width.
 // Monospace means character count and pixel width are interchangeable, so the
 // split lands exactly where the browser put it.
+//
+// Tokenising into words *and* runs of spaces (rather than splitting on " ")
+// keeps multi-space padding intact, which matters for elements that preserve
+// whitespace: their rendered columns have to line up with the cursor grid.
 function splitTextAcrossRows(text, capacities) {
   if (capacities.length === 1) {
     return [text];
   }
 
-  const words = text.split(" ").filter(Boolean);
+  const tokens = text.match(/\S+|\s+/g) ?? [];
   const rows = [];
   let index = 0;
 
   capacities.forEach((capacity, rowIndex) => {
     const isLast = rowIndex === capacities.length - 1;
     if (isLast) {
-      rows.push(words.slice(index).join(" "));
-      index = words.length;
+      rows.push(tokens.slice(index).join(""));
+      index = tokens.length;
       return;
     }
 
     let line = "";
-    while (index < words.length) {
-      const candidate = line ? `${line} ${words[index]}` : words[index];
-      if (candidate.length > capacity + 1 && line) {
+    while (index < tokens.length) {
+      const token = tokens[index];
+      const isSpace = /^\s/.test(token);
+      if (!isSpace && line.trim() && line.length + token.length > capacity + 1) {
         break;
       }
-      line = candidate;
+      line += token;
       index += 1;
       if (line.length >= capacity) {
         break;
@@ -108,6 +113,12 @@ function splitTextAcrossRows(text, capacities) {
   });
 
   return rows;
+}
+
+// `pre` and `pre-wrap` render every space, so collapsing them here would put
+// the model out of step with what is on screen.
+function preservesWhitespace(style) {
+  return /^(pre|pre-wrap|break-spaces)$/.test(style.whiteSpace);
 }
 
 function isNested(element, all) {
@@ -151,7 +162,10 @@ export function buildLineModel(container) {
     range.selectNodeContents(element);
     const groups = groupRectsByLine(range.getClientRects());
 
-    const text = (element.textContent || "").replace(/\s+/g, " ").trim();
+    const raw = element.textContent || "";
+    const text = preservesWhitespace(style)
+      ? raw.replace(/[\r\n]+/g, "").replace(/\s+$/, "")
+      : raw.replace(/\s+/g, " ").trim();
 
     if (groups.length === 0 || text === "") {
       // Blank lines and image-only rows: still navigable, just empty.

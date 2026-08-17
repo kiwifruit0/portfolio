@@ -194,18 +194,30 @@ export default function Editor({ file, children, cli, options, inputLocked, apiR
     const body = bodyRef.current;
     const row = model[rowIndex];
     if (!scroller || !body || !row) return;
-    if (scroller.scrollHeight <= scroller.clientHeight + 1) return;
 
-    const scrollerRect = scroller.getBoundingClientRect();
     const bodyRect = body.getBoundingClientRect();
     const top = bodyRect.top + row.y;
     const bottom = top + row.height;
     const pad = SCROLLOFF * 27;
 
-    if (top - pad < scrollerRect.top) {
-      scroller.scrollTop += top - pad - scrollerRect.top;
-    } else if (bottom + pad > scrollerRect.bottom) {
-      scroller.scrollTop += bottom + pad - scrollerRect.bottom;
+    // Below 1024px the container is `overflow: visible` and the window is what
+    // scrolls, so fall back to scrolling the page itself.
+    const scrolls = scroller.scrollHeight > scroller.clientHeight + 1;
+    const viewTop = scrolls ? scroller.getBoundingClientRect().top : 0;
+    const viewBottom = scrolls ? scroller.getBoundingClientRect().bottom : window.innerHeight;
+
+    let delta = 0;
+    if (top - pad < viewTop) {
+      delta = top - pad - viewTop;
+    } else if (bottom + pad > viewBottom) {
+      delta = bottom + pad - viewBottom;
+    }
+    if (delta === 0) return;
+
+    if (scrolls) {
+      scroller.scrollTop += delta;
+    } else {
+      window.scrollBy({ top: delta });
     }
   }, []);
 

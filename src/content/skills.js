@@ -1,51 +1,51 @@
-// Modelled on neovim's :checkhealth output. Levels mirror the real thing:
-//   OK   - used in anger, on something that shipped
-//   INFO - context, or something in progress
-//   WARN - honestly still learning
-export const healthSections = [
+// Laid out like lazy.nvim's plugin list. `state` is deliberately not a grade:
+// "loaded" means I use it on real work, "learning" means I am still picking it
+// up and will say so. Each note describes what the thing lets me do, not the
+// single job I happened to use it on.
+export const skillSections = [
   {
     id: "languages",
     title: "Languages",
     entries: [
       {
-        level: "OK",
-        name: "Python",
-        note: "main language. FastAPI backends, the dbt automation tool at Technicus, and the grade-predictor model."
-      },
-      {
-        level: "OK",
-        name: "Java",
-        note: "Spring Boot services behind the file-transfer platform at NatWest."
-      },
-      {
-        level: "OK",
         name: "C++",
-        note: "systems coursework, and the ESP32-S3 firmware for LoChord."
+        state: "loaded",
+        note: "systems and performance-critical code, real-time firmware, and anything where memory and latency are mine to control"
       },
       {
-        level: "OK",
+        name: "Python",
+        state: "loaded",
+        note: "general-purpose workhorse: backend services, data pipelines, machine learning, and automation"
+      },
+      {
+        name: "Java",
+        state: "loaded",
+        note: "backend services in a regulated codebase, with the review and testing that banking demands"
+      },
+      {
         name: "C",
-        note: "operating systems and computer architecture coursework."
+        state: "loaded",
+        note: "operating systems, memory, and architecture - what everything above is actually doing"
       },
       {
-        level: "OK",
         name: "SQL",
-        note: "migration work at Technicus, plus the data management module."
+        state: "loaded",
+        note: "schema design, query work, and moving large datasets between systems without losing any of it"
       },
       {
-        level: "OK",
         name: "JavaScript",
-        note: "React frontends for Echo, Outside, and this site."
+        state: "loaded",
+        note: "interactive React frontends, two of them prizewinning, and this editor"
       },
       {
-        level: "OK",
         name: "Bash",
-        note: "Linux is my only desktop OS, so this one is unavoidable."
+        state: "loaded",
+        note: "automation and glue; Linux is my only desktop OS"
       },
       {
-        level: "INFO",
         name: "Rust",
-        note: "learning it properly this year. Nothing shipped yet, so I won't claim it."
+        state: "learning",
+        note: "learning it properly this year, nothing shipped yet, so I won't claim it"
       }
     ]
   },
@@ -54,34 +54,34 @@ export const healthSections = [
     title: "Backend and data",
     entries: [
       {
-        level: "OK",
         name: "FastAPI",
-        note: "the backend behind both hackathon wins, including a low-latency voice pipeline."
+        state: "loaded",
+        note: "REST services and low-latency streaming; the backend behind both hackathon wins"
       },
       {
-        level: "OK",
         name: "Spring Boot",
-        note: "request and approval pipeline for internal file transfers at NatWest."
+        state: "loaded",
+        note: "request and approval pipelines inside a bank's internal network"
       },
       {
-        level: "OK",
         name: "dbt",
-        note: "config-driven transformations across a full client pipeline."
+        state: "loaded",
+        note: "config-driven transformations across a full client pipeline, 40 manual steps down to 11"
       },
       {
-        level: "OK",
         name: "MongoDB",
-        note: "Atlas, storing and serving audio for Echo."
+        state: "loaded",
+        note: "document modelling and Atlas, including storing and serving audio"
       },
       {
-        level: "OK",
-        name: "REST API design",
-        note: "the seam between every frontend and backend I have written."
+        name: "REST design",
+        state: "loaded",
+        note: "the seam between every frontend and backend I have written"
       },
       {
-        level: "OK",
         name: "AWS",
-        note: "deployment and storage during my internships."
+        state: "loaded",
+        note: "deployment and storage across both internships"
       }
     ]
   },
@@ -90,29 +90,24 @@ export const healthSections = [
     title: "Systems and security",
     entries: [
       {
-        level: "OK",
         name: "Operating systems",
-        note: "processes, scheduling, virtual memory. Favourite module of the degree so far."
+        state: "loaded",
+        note: "processes, scheduling, virtual memory, and the concurrency bugs that come with them"
       },
       {
-        level: "OK",
-        name: "Networks and security",
-        note: "protocol design and the threat model behind it; directly useful in regulated fintech."
+        name: "Architecture",
+        state: "loaded",
+        note: "caches, pipelines, and reasoning about why the fast path is fast"
       },
       {
-        level: "OK",
-        name: "System architecture",
-        note: "caches, pipelines, and why the fast path is fast."
+        name: "Networks & sec",
+        state: "loaded",
+        note: "protocol design and the threat model behind it; directly useful in regulated fintech"
       },
       {
-        level: "OK",
-        name: "Concurrency",
-        note: "threads, locks, and the bugs they cause."
-      },
-      {
-        level: "OK",
         name: "Linux",
-        note: "daily driver for four years, Arch specifically."
+        state: "loaded",
+        note: "daily driver for years, configured by hand, debugged at the syscall level"
       }
     ]
   },
@@ -121,24 +116,29 @@ export const healthSections = [
     title: "Embedded",
     entries: [
       {
-        level: "OK",
         name: "ESP32-S3",
-        note: "LoChord: native USB MIDI over TinyUSB, an SPI display, encoders and a joystick."
+        state: "loaded",
+        note: "real-time firmware: native USB MIDI, SPI displays, encoder and joystick input"
       },
       {
-        level: "OK",
-        name: "PlatformIO / Arduino",
-        note: "the toolchain for every microcontroller project I have built."
+        name: "PlatformIO",
+        state: "loaded",
+        note: "the toolchain behind every microcontroller project I have built"
       },
       {
-        level: "OK",
         name: "I2C / SPI",
-        note: "talking to displays and peripherals, and reading a datasheet to find out why it isn't working."
+        state: "loaded",
+        note: "driving peripherals, and reading the datasheet to find out why they aren't driving"
       },
       {
-        level: "WARN",
         name: "KiCad",
-        note: "self-taught and still learning. LoChord is the first board I have taken from schematic to layout."
+        state: "learning",
+        note: "first board taken from schematic all the way to layout; still learning the craft"
+      },
+      {
+        name: "LVGL",
+        state: "learning",
+        note: "embedded UI on a 428x142 display, laid out in EEZ Studio"
       }
     ]
   },
@@ -147,24 +147,19 @@ export const healthSections = [
     title: "Frontend",
     entries: [
       {
-        level: "OK",
         name: "React",
-        note: "every project on the projects page, including this one."
+        state: "loaded",
+        note: "every project on the projects page, including the one you are reading"
       },
       {
-        level: "OK",
         name: "Tailwind",
-        note: "the two hackathon builds, where speed mattered more than bespoke CSS."
+        state: "loaded",
+        note: "when shipping in 24 hours matters more than bespoke CSS"
       },
       {
-        level: "OK",
         name: "Vite",
-        note: "build tooling for this site."
-      },
-      {
-        level: "INFO",
-        name: "LVGL",
-        note: "embedded UI for LoChord's 428x142 display, laid out in EEZ Studio."
+        state: "loaded",
+        note: "build tooling and dev server for this site"
       }
     ]
   },
@@ -172,25 +167,16 @@ export const healthSections = [
     id: "tooling",
     title: "Tooling",
     entries: [
-      { level: "OK", name: "Git", note: "branches, rebases, and the occasional reflog rescue." },
-      { level: "OK", name: "CMake", note: "building C and C++ projects that have more than one file." },
-      { level: "OK", name: "Jupyter", note: "where the grade predictor was actually figured out." },
-      { level: "OK", name: "Neovim", note: "see: this entire website." }
-    ]
-  },
-  {
-    id: "offline",
-    title: "Away from the keyboard",
-    entries: [
-      { level: "INFO", name: "Guitar", note: "playing them, and fixing up old ones." },
-      { level: "INFO", name: "Ableton", note: "making music, which is partly why LoChord exists." },
-      { level: "INFO", name: "Volleyball", note: "regularly, and badly." }
+      { name: "Git", state: "loaded", note: "branches, rebases, and the occasional reflog rescue" },
+      { name: "CMake", state: "loaded", note: "building C and C++ projects with more than one file in them" },
+      { name: "Jupyter", state: "loaded", note: "where the grade predictor was actually worked out" },
+      { name: "Neovim", state: "loaded", note: "see: this entire website" }
     ]
   }
 ];
 
-export const healthSummary = [
-  { level: "OK", name: "Degree", note: "1st in both years so far, on track for a 1st overall." },
-  { level: "OK", name: "Industry", note: "two summers shipped: NatWest 2026, Technicus 2025." },
-  { level: "INFO", name: "Availability", note: "graduate roles starting summer or autumn 2027." }
+export const skillFooter = [
+  "Two summers in industry, two hackathon wins, and firsts in both years so far.",
+  "Everything marked in use has been written against something real. The three still",
+  "loading are honest gaps, and I would rather say so than pad the list."
 ];
