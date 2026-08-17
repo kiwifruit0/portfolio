@@ -16,7 +16,7 @@ export default function Projects() {
         cards={[
           {
             name: "1st place - ElevenLabs track at SotonHack 2026",
-            desc: "Voice-based social media that joins the semi-anonymous forum style of Reddit and Quora with the daily interaction between friends seen in BeReal. Won the \"Best use of ElevenLabs\" track with our voice assistant.",
+            desc: "Voice-based social media that joins the semi-anonymous forum style of Reddit and Quora with the daily interaction between friends seen in BeReal. Won the \"Best use of ElevenLabs\" track with our AI voice assistant.",
             tech: ["React", "Python", "FastAPI", "Gemini API", "MongoDB"],
             link: "github.com/kiwifruit0/Echo",
           },

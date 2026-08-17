@@ -5,7 +5,7 @@ export default function Home() {
       <h1>Toby Jennings</h1>
 
       <p>
-        Hi, I'm Toby. I'm a penultimate-year Computer Science BSc student at the University of Southampton.
+        Hi, I'm Toby. I'm a final-year Computer Science BSc student at the University of Southampton.
         I like building things that are practical, and (ideally) actually fun to use.
       </p>
 
