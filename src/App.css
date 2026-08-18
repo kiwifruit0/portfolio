@@ -395,28 +395,49 @@ body::before {
   inset: 0;
   pointer-events: none;
   z-index: 5;
+  /* .cursor-text is as wide as its whole row and only clipped by clip-path,
+     which does not affect layout - without this a long line could hand the
+     scroll container a horizontal scrollbar it has no business having. */
+  overflow: hidden;
 }
 
-/* The block is opaque and redraws the character it covers in the background
-   colour, the way a terminal cursor inverts the cell. Blend modes were washing
-   the glyph out and leaving it unreadable. */
+/* The block itself carries no text - see .cursor-text below. It is opaque
+   because blend modes washed the covered glyph out and left it unreadable. */
 .cursor {
   position: absolute;
   top: 0;
   left: 0;
   background: var(--nord9);
-  color: var(--nord0);
   z-index: 10;
   pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  white-space: pre;
-  font-family: var(--font-mono);
-  font-weight: 500;
-  line-height: 1;
   transition: transform 28ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* The row's text, redrawn in the cursor's foreground colour directly on top of
+   itself and clipped to the single cell the block covers. It is pinned to the
+   row and never animates its position, so moving along a line slides the clip
+   window and the character stays put - no glyph gets dragged behind the
+   cursor. The fade matches the block's travel time so a new line's character
+   arrives exactly as the block does. */
+.cursor-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 11;
+  pointer-events: none;
+  white-space: pre;
+  color: var(--nord0);
+  transition: clip-path 28ms cubic-bezier(0.33, 1, 0.68, 1);
+  animation: cursor-glyph-in 28ms linear;
+}
+
+@keyframes cursor-glyph-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .cursor-line {
@@ -1179,8 +1200,18 @@ kbd {
   color: var(--nord5);
 }
 
+/* In prose a key has to sit on the character grid like any other word, so it
+   gets no horizontal padding and no size of its own; the border is painted with
+   a box-shadow, which costs no layout. Boxed keys inside a float window are
+   free to keep their padding - nothing measures a cursor through those. */
 .page kbd {
   line-height: var(--row);
+  font-size: inherit;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--nord2) 70%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--nord2) 70%, transparent);
 }
 
 .lede {
@@ -1252,13 +1283,29 @@ kbd {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
-.project-shot-svg,
-.project-shot-image {
+/* The wireframes are 8:3 and need the full width to keep their 8px labels
+   legible. Photographs are nearer 5:3, so at that width they stand a third
+   taller and swamp the entry; a narrower frame brings them back to roughly the
+   same height. */
+.project-shot.photo .project-shot-frame {
+  width: min(100%, 480px);
+}
+
+.project-shot-svg {
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 8 / 3;
   object-fit: cover;
+}
+
+/* Screenshots keep their own shape: the width/height attributes on the <img>
+   supply the ratio, so cropping them to the wireframe's 8:3 would only throw
+   away real pixels. */
+.project-shot-image {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .page .project-shot-caption {
@@ -1671,6 +1718,7 @@ kbd {
 
 @media (prefers-reduced-motion: reduce) {
   .cursor,
+  .cursor-text,
   .cursor-line,
   .which-key {
     transition: none;

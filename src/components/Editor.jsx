@@ -477,10 +477,17 @@ export default function Editor({ file, children, cli, options, inputLocked, apiR
 
   const currentRow = rows[cursor] ?? FALLBACK_ROW;
   const cursorX = currentRow.x + column * currentRow.charWidth;
-  // The block paints over the glyph, so it has to redraw it in the inverse
-  // colour. Whitespace stays a plain block.
-  const covered = currentRow.text?.[column] ?? "";
-  const charUnderCursor = covered.trim() ? covered : "";
+
+  // The block used to carry the covered character as its child, so the glyph
+  // slid along with the block and looked like the cursor was dragging it. Now
+  // the whole row is redrawn once in the cursor's foreground colour, pinned
+  // exactly over the real text and never moved; what animates is a one-cell
+  // clip window. The glyph is revealed rather than transported, which is what
+  // an inverted terminal cell actually does.
+  const rowText = currentRow.text ?? "";
+  const inverseWidth = rowText.length * currentRow.charWidth;
+  const clipLeft = column * currentRow.charWidth;
+  const clipRight = Math.max(0, inverseWidth - clipLeft - currentRow.charWidth);
 
   const gutter = useMemo(() => {
     const entries = [];
@@ -569,12 +576,30 @@ export default function Editor({ file, children, cli, options, inputLocked, apiR
                   style={{
                     transform: `translate(${cursorX}px, ${currentRow.y}px)`,
                     width: `${currentRow.charWidth}px`,
-                    height: `${currentRow.height}px`,
-                    fontSize: `${currentRow.fontSize}px`
+                    height: `${currentRow.height}px`
                   }}
-                >
-                  {charUnderCursor}
-                </div>
+                />
+
+                {rowText && (
+                  // Keyed on the row so changing line remounts it: a fresh
+                  // element starts at the new clip window instead of sweeping
+                  // across a line it was never on.
+                  <div
+                    key={cursor}
+                    className="cursor-text"
+                    style={{
+                      transform: `translate(${currentRow.x}px, ${currentRow.y}px)`,
+                      width: `${inverseWidth}px`,
+                      height: `${currentRow.height}px`,
+                      lineHeight: `${currentRow.height}px`,
+                      fontSize: `${currentRow.fontSize}px`,
+                      clipPath: `inset(0 ${clipRight}px 0 ${clipLeft}px)`,
+                      ...currentRow.font
+                    }}
+                  >
+                    {rowText}
+                  </div>
+                )}
               </div>
             )}
           </div>

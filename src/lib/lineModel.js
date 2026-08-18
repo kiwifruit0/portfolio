@@ -19,8 +19,26 @@ export const FALLBACK_ROW = {
   text: "",
   textLength: 0,
   showLineNumber: true,
-  element: null
+  element: null,
+  font: {
+    fontFamily: "monospace",
+    fontWeight: "400",
+    fontStyle: "normal",
+    letterSpacing: "normal"
+  }
 };
+
+// Enough of the row's typography to redraw one of its characters on top of
+// itself, pixel for pixel. The cursor overlay needs this: a heading and a
+// paragraph share the grid but not the weight or the size.
+function fontOf(style) {
+  return {
+    fontFamily: style.fontFamily,
+    fontWeight: style.fontWeight,
+    fontStyle: style.fontStyle,
+    letterSpacing: style.letterSpacing
+  };
+}
 
 const charWidthCache = new Map();
 let measureContext = null;
@@ -79,6 +97,12 @@ function groupRectsByLine(rects) {
 // Tokenising into words *and* runs of spaces (rather than splitting on " ")
 // keeps multi-space padding intact, which matters for elements that preserve
 // whitespace: their rendered columns have to line up with the cursor grid.
+//
+// Only a word can be pushed onto the next row. Whitespace is always absorbed by
+// the row it follows, because a space at a wrap point hangs off the end of the
+// line rather than being rendered at the start of the next one. Letting a space
+// carry over gave every wrapped row a phantom leading character, which shifted
+// its whole grid one column right and put the cursor on the wrong glyph.
 function splitTextAcrossRows(text, capacities) {
   if (capacities.length === 1) {
     return [text];
@@ -100,14 +124,12 @@ function splitTextAcrossRows(text, capacities) {
     while (index < tokens.length) {
       const token = tokens[index];
       const isSpace = /^\s/.test(token);
-      if (!isSpace && line.trim() && line.length + token.length > capacity + 1) {
+      // A row has to take at least one word, however long that word is.
+      if (!isSpace && line.trim() !== "" && line.length + token.length > capacity) {
         break;
       }
       line += token;
       index += 1;
-      if (line.length >= capacity) {
-        break;
-      }
     }
     rows.push(line);
   });
@@ -119,6 +141,38 @@ function splitTextAcrossRows(text, capacities) {
 // the model out of step with what is on screen.
 function preservesWhitespace(style) {
   return /^(pre|pre-wrap|break-spaces)$/.test(style.whiteSpace);
+}
+
+// Not everything inside a row belongs on the row's character grid.
+//
+// Replaced content is a picture, not a line of characters, and `textContent`
+// does not agree: it happily returns the <text> labels inside an inline SVG,
+// which left the model believing a wireframe was ninety characters of prose.
+//
+// `data-offgrid` marks the other case: decoration such as a badge, which has
+// its own font-size, letter-spacing and padding and so occupies a width no
+// whole number of the row's characters can describe.
+//
+// Both are skipped for text *and* for measurement, so a row that opens with a
+// badge starts at the first character that is genuinely on the grid. A row with
+// nothing left falls through to the blank-row branch and stays navigable.
+const NON_TEXT = /^(svg|img|canvas|video|iframe|object|picture)$/i;
+
+function isOffGrid(element) {
+  return NON_TEXT.test(element.tagName) || element.dataset?.offgrid !== undefined;
+}
+
+function gridTextNodes(element, out = []) {
+  element.childNodes.forEach((node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      if (node.nodeValue) {
+        out.push(node);
+      }
+    } else if (node.nodeType === Node.ELEMENT_NODE && !isOffGrid(node)) {
+      gridTextNodes(node, out);
+    }
+  });
+  return out;
 }
 
 function isNested(element, all) {
@@ -154,15 +208,23 @@ export function buildLineModel(container) {
     const style = window.getComputedStyle(element);
     const fontSize = parseFloat(style.fontSize) || 14;
     const charWidth = charWidthFor(style);
+    const font = fontOf(style);
     const elementRect = element.getBoundingClientRect();
     const elementTop = elementRect.top - containerRect.top;
     const elementBottom = elementRect.bottom - containerRect.top;
 
+    // Measured over the on-grid text nodes rather than the whole element, so a
+    // badge or a picture contributes neither characters nor rects.
+    const nodes = gridTextNodes(element);
     const range = document.createRange();
-    range.selectNodeContents(element);
-    const groups = groupRectsByLine(range.getClientRects());
+    const rects = [];
+    nodes.forEach((node) => {
+      range.selectNodeContents(node);
+      rects.push(...range.getClientRects());
+    });
+    const groups = groupRectsByLine(rects);
 
-    const raw = element.textContent || "";
+    const raw = nodes.map((node) => node.nodeValue).join("");
     const text = preservesWhitespace(style)
       ? raw.replace(/[\r\n]+/g, "").replace(/\s+$/, "")
       : raw.replace(/\s+/g, " ").trim();
@@ -186,7 +248,8 @@ export function buildLineModel(container) {
         text: "",
         textLength: 0,
         showLineNumber: true,
-        element
+        element,
+        font
       });
       return;
     }
@@ -218,7 +281,8 @@ export function buildLineModel(container) {
         text: rowText,
         textLength: rowText.length,
         showLineNumber: index === 0,
-        element
+        element,
+        font
       });
     });
   });

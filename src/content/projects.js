@@ -1,6 +1,10 @@
-// `mockup` selects a themeable inline SVG wireframe from components/ProjectShot.jsx.
-// To use a real screenshot instead, drop a PNG in src/assets/previews/ and set
-// `image: new URL("../assets/previews/echo.png", import.meta.url).href` on the entry.
+// Each entry gets one preview. `image` wins when it is set: that is a real
+// screenshot out of src/assets/projects/. Entries without one fall back to
+// `mockup`, a themeable inline SVG wireframe from components/ProjectShot.jsx,
+// which is what the shipped-nothing-to-photograph projects use.
+//
+// The .webp files are downscaled from the source .png screenshots in the same
+// folder; the originals are ~4MB and have no business in a bundle.
 export const projects = [
   {
     id: "echo",
@@ -8,8 +12,8 @@ export const projects = [
     tagline: "1st place - ElevenLabs track, SotonHack 2026",
     period: "Feb 2026",
     award: "1st place",
-    mockup: "echo",
-    shotCaption: "voice feed, recorder, and the 3D friend graph",
+    image: { src: new URL("../assets/projects/echo.webp", import.meta.url).href, width: 1440, height: 857 },
+    shotCaption: "the daily summary prompt, mid-playback",
     tech: ["React", "Tailwind", "Python", "FastAPI", "ElevenLabs", "Gemini", "MongoDB"],
     link: "github.com/kiwifruit0/Echo",
     desc:
@@ -22,13 +26,13 @@ export const projects = [
     ]
   },
   {
-    id: "wecs",
-    name: "Outside",
+    id: "wander",
+    name: "Wander",
     tagline: "1st place - Soton Data Science x WECS Hackathon",
     period: "Nov 2025",
     award: "1st place",
-    mockup: "map",
-    shotCaption: "live map, category stats, and the leaderboard",
+    image: { src: new URL("../assets/projects/wander.webp", import.meta.url).href, width: 1444, height: 859 },
+    shotCaption: "the world map, with the player card and category stats",
     tech: ["React", "Tailwind", "Python", "FastAPI", "Mapbox", "REST"],
     link: "github.com/Ryan-Shino/WECSHackathonProject",
     desc:
