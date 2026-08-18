@@ -7,7 +7,7 @@ export const profile = {
   status: "Applying for 2027 software engineering graduate roles",
   email: "tobysj@proton.me",
   phone: "+44 7981 920045",
-  website: "toby-jennings.com",
+  website: "tobyjennings.dev",
   github: "github.com/kiwifruit0",
   linkedin: "linkedin.com/in/toby-jennings"
 };
@@ -15,7 +15,7 @@ export const profile = {
 export const links = {
   github: "https://github.com/kiwifruit0",
   linkedin: "https://linkedin.com/in/toby-jennings",
-  website: "https://toby-jennings.com",
+  website: "https://tobyjennings.dev",
   email: "mailto:tobysj@proton.me",
   phone: "tel:+447981920045"
 };
