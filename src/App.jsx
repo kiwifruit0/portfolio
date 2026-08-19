@@ -24,17 +24,43 @@ import cvPdfUrl from "./assets/Toby_Jennings_CV.pdf?url";
 
 const CV = lazy(() => import("./pages/CV"));
 
+// `slug` is the shareable URL for the buffer; index.md is the site root. The
+// title is what a link to that URL shows in a browser tab or a chat preview.
 const pages = {
-  "index.md": { name: "index.md", language: "markdown", component: Home, icon: "mdi:language-markdown" },
-  "projects.cpp": { name: "projects.cpp", language: "cpp", component: Projects, icon: "mdi:language-cpp" },
-  "experience.py": { name: "experience.py", language: "python", component: Experience, icon: "mdi:language-python" },
-  "education.sh": { name: "education.sh", language: "bash", component: Education, icon: "mdi:terminal" },
-  "skills.lua": { name: "skills.lua", language: "lua", component: Skills, icon: "mdi:language-lua" },
-  "cv.pdf": { name: "cv.pdf", language: "pdf", component: CV, icon: "mdi:file-pdf-box" },
-  "contact.java": { name: "contact.java", language: "java", component: Contact, icon: "mdi:card-account-phone-outline" }
+  "index.md": { name: "index.md", slug: "", title: "Toby Jennings | Portfolio", language: "markdown", component: Home, icon: "mdi:language-markdown" },
+  "projects.cpp": { name: "projects.cpp", slug: "projects", title: "Projects | Toby Jennings", language: "cpp", component: Projects, icon: "mdi:language-cpp" },
+  "experience.py": { name: "experience.py", slug: "experience", title: "Experience | Toby Jennings", language: "python", component: Experience, icon: "mdi:language-python" },
+  "education.sh": { name: "education.sh", slug: "education", title: "Education | Toby Jennings", language: "bash", component: Education, icon: "mdi:terminal" },
+  "skills.lua": { name: "skills.lua", slug: "skills", title: "Skills | Toby Jennings", language: "lua", component: Skills, icon: "mdi:language-lua" },
+  "cv.pdf": { name: "cv.pdf", slug: "cv", title: "CV | Toby Jennings", language: "pdf", component: CV, icon: "mdi:file-pdf-box" },
+  "contact.java": { name: "contact.java", slug: "contact", title: "Contact | Toby Jennings", language: "java", component: Contact, icon: "mdi:card-account-phone-outline" }
 };
 
 const FILES = Object.keys(pages);
+
+const HOME_FILE = "index.md";
+
+/* -------------------------------------------------------------------- urls */
+
+// The buffers are also addressable, so a link can point straight at the CV
+// rather than at the site and a sentence explaining which key to press.
+// vercel.json rewrites every unmatched path to index.html, which is what lets
+// a cold load of /cv reach the app at all - without it the host would 404
+// before any of this ran.
+const FILE_BY_SLUG = Object.fromEntries(
+  FILES.map((file) => [pages[file].slug, file])
+);
+
+function pathFor(file) {
+  return `/${pages[file]?.slug ?? ""}`;
+}
+
+// Anything unrecognised opens the home buffer rather than erroring: a stale or
+// mistyped link should still land somewhere useful.
+function fileForPath(pathname) {
+  const slug = pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
+  return FILE_BY_SLUG[slug] ?? HOME_FILE;
+}
 
 const DEFAULT_OPTIONS = {
   number: true,
@@ -44,7 +70,7 @@ const DEFAULT_OPTIONS = {
 };
 
 export default function App() {
-  const [activeFileName, setActiveFileName] = useState("index.md");
+  const [activeFileName, setActiveFileName] = useState(() => fileForPath(window.location.pathname));
   const [theme, setThemeState] = useState(loadTheme);
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
   const [overlay, setOverlay] = useState(null);
@@ -81,7 +107,29 @@ export default function App() {
     if (!pages[file]) return;
     cliRef.current?.clearSearch();
     setActiveFileName(file);
+    // Only a real change earns a history entry: reopening the buffer that is
+    // already showing should not give the back button something to undo.
+    const path = pathFor(file);
+    if (path !== window.location.pathname) {
+      window.history.pushState(null, "", path);
+    }
   }, []);
+
+  // Back and forward: the URL is already where the reader wants to be, so only
+  // the buffer has to catch up - pushing again here would trap them in history.
+  useEffect(() => {
+    const handlePopState = () => {
+      cliRef.current?.clearSearch();
+      setActiveFileName(fileForPath(window.location.pathname));
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  // The tab name, and what a pasted link previews as.
+  useEffect(() => {
+    document.title = activePage.title;
+  }, [activePage]);
 
   const openFinder = useCallback((source, query = "") => {
     setOverlay({ type: "finder", source, query });
