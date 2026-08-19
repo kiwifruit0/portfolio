@@ -1,16 +1,36 @@
-# React + Vite
+# portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+My personal site, [tobyjennings.dev](https://tobyjennings.dev) — a portfolio that behaves like Neovim.
 
-Currently, two official plugins are available:
+![The site with index.md open in the Nord colorscheme](docs/screenshot-19-8.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Each page is a buffer in a file tree, and the cursor is real: it is measured against the actually
+rendered text, so vim motions land on the character you expect. There is a working command line,
+a Telescope-style fuzzy finder, live grep across every page, a which-key leader menu, and seven
+colorschemes.
 
-## React Compiler
+## Keys
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| | |
+|---|---|
+| `h` `j` `k` `l` | move |
+| `w` `b` `e` | by word |
+| `gg` `G` `{` `}` | jump |
+| `C-d` `C-u` `C-f` `C-b` | scroll |
+| `/` `n` `N` | search the buffer |
+| `C-p` `C-g` | find files / live grep |
+| `:` | command line — try `:colorscheme` or `:neofetch` |
+| `Space` | leader (hold to see the menu) |
+| `gx` | follow the link on the current line |
+| `?` | every keymap |
 
-## Expanding the ESLint configuration
+## Running it
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+npm run dev
+```
+
+`npm run build` produces `dist/`. Built with React 19 and Vite; the CV is rendered in the buffer
+with pdf.js, and JetBrains Mono is self-hosted so that every glyph advances by the same width —
+the cursor grid depends on it.
