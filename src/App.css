@@ -1,3 +1,38 @@
+/* JetBrains Mono is shipped with the site rather than fetched from a CDN or
+   borrowed from the visitor's installed fonts. The cursor is drawn on a
+   character grid, so the page has to know the advance width of a glyph before
+   it can put a block over one - and it only knows it if every machine renders
+   the same file. A locally installed copy could be any version, a CDN copy is
+   subset down to Latin and arrives (or does not) over the network, and either
+   way the arrows and block characters the pages draw with would come from some
+   other font at some other width. See scripts/build-fonts.py.
+
+   No local() source on purpose: an installed JetBrains Mono would shadow this
+   one and put the metrics back in the visitor's hands. */
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./assets/fonts/JetBrainsMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./assets/fonts/JetBrainsMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./assets/fonts/JetBrainsMono-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
 :root {
   --container-max-width: 1480px;
   --navbar-height: 54px;

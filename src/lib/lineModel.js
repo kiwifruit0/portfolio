@@ -43,6 +43,22 @@ function fontOf(style) {
 const charWidthCache = new Map();
 let measureContext = null;
 
+// Nothing on the grid is 1px serif, so a canvas still reporting this after
+// being handed a row's font rejected that font.
+const PROBE_FONT = "1px serif";
+
+// A row's advance width is cached under its font string, and that string does
+// not change when the webfont finally lands - "JetBrains Mono, monospace" reads
+// the same before and after. So the first measurement, taken against whatever
+// fallback was on screen at first paint, would be handed back forever and every
+// column would sit at the fallback's width. Dropping the cache when the font
+// set changes is what lets the remeasure that follows actually see the new
+// metrics. Machines with JetBrains Mono installed never saw this: their first
+// paint was already the right font.
+export function resetCharWidthCache() {
+  charWidthCache.clear();
+}
+
 function charWidthFor(style) {
   const font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
   const cached = charWidthCache.get(font);
@@ -55,10 +71,18 @@ function charWidthFor(style) {
   }
 
   let width = 0;
+  // A canvas keeps its previous font when handed one it cannot parse, so an
+  // unparseable stack would be measured as 10px sans-serif without a word of
+  // complaint. Writing a probe first and checking that it was displaced is how
+  // that failure is caught; the row falls back to a ratio of its font size.
   if (measureContext) {
+    measureContext.font = PROBE_FONT;
     measureContext.font = font;
-    // Average over a run of characters: sub-pixel advances round more honestly.
-    width = measureContext.measureText("0".repeat(50)).width / 50;
+    if (measureContext.font !== PROBE_FONT) {
+      // Average over a run of characters: sub-pixel advances round more
+      // honestly.
+      width = measureContext.measureText("0".repeat(50)).width / 50;
+    }
   }
 
   const fontSize = parseFloat(style.fontSize) || 14;

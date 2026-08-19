@@ -9,6 +9,7 @@ import {
   nextWordStart,
   paragraphJump,
   prevWordStart,
+  resetCharWidthCache,
   wordEnd
 } from "../lib/lineModel";
 
@@ -134,15 +135,27 @@ export default function Editor({ file, children, cli, options, inputLocked, apiR
     const ro = new ResizeObserver(schedule);
     ro.observe(body);
 
-    // Web fonts landing after first paint shift every measurement.
-    if (document.fonts?.ready) {
-      document.fonts.ready.then(schedule).catch(() => {});
+    // Web fonts landing after first paint shift every measurement, and the
+    // cached advance widths were taken against the fallback face, so they have
+    // to go before anything is measured again. `loadingdone` as well as
+    // `ready`: bold and italic are fetched when a page first asks for them,
+    // which can be long after the first load settles.
+    const refresh = () => {
+      resetCharWidthCache();
+      schedule();
+    };
+
+    const fonts = document.fonts;
+    if (fonts) {
+      fonts.ready?.then(refresh).catch(() => {});
+      fonts.addEventListener?.("loadingdone", refresh);
     }
 
     return () => {
       cancelAnimationFrame(frame);
       mo.disconnect();
       ro.disconnect();
+      fonts?.removeEventListener?.("loadingdone", refresh);
     };
     // Keyed on the file, not on `children`: the element identity changes on
     // every parent render, and resetting the cursor then would be maddening.
